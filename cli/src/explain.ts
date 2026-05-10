@@ -3,12 +3,15 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { RegistryItem } from "./schema.ts";
 import { plan } from "./resolve.ts";
+import { readInstalled, exists, INSTALLED_PATH } from "./state.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..", "..");
 
 export type ExplainOpts = {
   target: string;
+  /** Names to treat as already-installed. If empty AND state file exists,
+   * use installed.json as the source of truth. */
   installed: string[];
 };
 
@@ -32,7 +35,16 @@ export async function explain(opts: ExplainOpts): Promise<number> {
     return 1;
   }
 
-  const { resolved, conflicts } = await plan(root, opts.installed);
+  // If --installed wasn't passed, fall back to the state file.
+  let installed = opts.installed;
+  let installedSource = "flags";
+  if (installed.length === 0 && (await exists(INSTALLED_PATH))) {
+    const state = await readInstalled();
+    installed = state.installed.map((e) => e.name);
+    installedSource = "installed.json";
+  }
+
+  const { resolved, conflicts } = await plan(root, installed);
 
   console.log(`Plan for ${root.name} (${root.type}):`);
   console.log("");
@@ -44,9 +56,9 @@ export async function explain(opts: ExplainOpts): Promise<number> {
     console.log(`    ${it.name.padEnd(24)} ${it.type.padEnd(20)}${provides}`);
   }
 
-  if (opts.installed.length > 0) {
+  if (installed.length > 0) {
     console.log("");
-    console.log(`  Already installed: ${opts.installed.join(", ")}`);
+    console.log(`  Already installed (${installedSource}): ${installed.join(", ")}`);
   }
 
   console.log("");

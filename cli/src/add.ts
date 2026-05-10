@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { loadValidators, type RegistryItem } from "./schema.ts";
 import { plan } from "./resolve.ts";
+import { readInstalled, exists, INSTALLED_PATH } from "./state.ts";
 
 async function fetchItem(target: string): Promise<RegistryItem> {
   if (target.startsWith("http://") || target.startsWith("https://")) {
@@ -26,9 +27,14 @@ export async function add(target: string): Promise<void> {
 
   console.log(`Resolved: ${root.name} (${root.type})`);
 
-  // Resolve transitive deps + check conflicts (against an empty
-  // already-installed set for the prototype — no state file yet).
-  const { resolved, conflicts } = await plan(root, []);
+  // Resolve transitive deps + check conflicts against the user's current
+  // installed set (from ~/.config/rice-registry/installed.json).
+  let installed: string[] = [];
+  if (await exists(INSTALLED_PATH)) {
+    const state = await readInstalled();
+    installed = state.installed.map((e) => e.name);
+  }
+  const { resolved, conflicts } = await plan(root, installed);
 
   if (resolved.items.length > 1) {
     console.log(`  transitive closure (${resolved.items.length}):`);

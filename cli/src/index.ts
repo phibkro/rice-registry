@@ -4,6 +4,8 @@ import { validatePath } from "./validate.ts";
 import { add } from "./add.ts";
 import { query } from "./query.ts";
 import { explain } from "./explain.ts";
+import { init } from "./init.ts";
+import { list } from "./list.ts";
 
 const [, , cmd, ...rest] = process.argv;
 
@@ -31,6 +33,14 @@ Usage:
       Resolve transitive dependencies and report slot conflicts against
       an already-installed set. Read-only — does not mutate anything.
       --installed may be repeated.
+
+  nix-rice init [--force]
+      Initialize ~/.config/rice-registry/ — installed.json state file,
+      managed home-manager module, items directory. Prints the import
+      line to add to your home.nix. --force overwrites existing state.
+
+  nix-rice list
+      List currently-installed items from ~/.config/rice-registry/installed.json.
 `;
 
 switch (cmd) {
@@ -84,6 +94,15 @@ switch (cmd) {
       if (rest[i] === "--installed") installed.push(rest[++i]!);
     }
     const code = await explain({ target, installed });
+    process.exit(code);
+  }
+  case "init": {
+    const force = rest.includes("--force");
+    const code = await init({ force });
+    process.exit(code);
+  }
+  case "list": {
+    const code = await list();
     process.exit(code);
   }
   case undefined:
