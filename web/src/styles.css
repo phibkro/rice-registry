@@ -1,190 +1,59 @@
-:root {
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  color: #1c2227;
-  background: #f4f6f8;
-}
+@import "tailwindcss";
 
-* {
-  box-sizing: border-box;
-}
+/* Pull shared Solid components into class scanning. */
+@source "../../packages/shared/src";
 
-html,
-body {
-  margin: 0;
-  height: 100%;
-}
+/* Custom palette tokens — Tailwind v4 auto-generates `bg-page-bg`,
+ * `text-page-fg`, etc. from `--color-*` entries.
+ *
+ * Dark mode: we override the same tokens via prefers-color-scheme so
+ * utilities resolve to the dark values without `dark:` prefixes.
+ */
+@theme {
+  --color-page-bg: #f4f6f8;
+  --color-page-fg: #1c2227;
+  --color-page-muted: #dde3e8;
+  --color-page-border: #c4ccd2;
+  --color-page-primary: #5b7a92;
+  --color-page-primary-fg: #ffffff;
+  --color-page-faint: #6b7480;
+  --color-page-danger: #b4564b;
+  --color-page-success: #4a8f5b;
 
-#root {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  height: 100vh;
-}
-
-.page-header {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  padding: 0.75rem 1.25rem;
-  border-bottom: 1px solid var(--page-border);
-  background: white;
-}
-.brand {
-  display: flex;
-  gap: 0.5rem;
-  align-items: baseline;
-  flex: 1;
-}
-.brand strong {
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-.brand .tagline {
-  color: var(--page-faint);
-  font-size: 0.9em;
-}
-.repo {
-  color: var(--page-faint);
-  text-decoration: none;
-  font-size: 0.9em;
-}
-.repo:hover {
-  color: var(--page-primary);
-}
-
-.page-main {
-  display: grid;
-  grid-template-columns: 1fr minmax(280px, 1fr) minmax(280px, 1fr);
-  overflow: hidden;
-}
-
-.preview-pane {
-  display: flex;
-  flex-direction: column;
-  background: #2a2f33;
-  overflow: hidden;
-}
-.preview-toolbar {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  padding: 0.5rem 0.75rem;
-  background: #1f2429;
-  color: #c4ccd2;
-  font-size: 0.85em;
-  border-bottom: 1px solid #0c1014;
-}
-.preview-label {
-  font-weight: 500;
-}
-.preview-hint {
-  color: var(--page-faint);
-  margin-left: auto;
-}
-
-.mode-toggle {
-  display: flex;
-  gap: 2px;
-  background: #0c1014;
-  border-radius: 4px;
-  padding: 2px;
-}
-.mode-button {
-  background: transparent;
-  color: #c4ccd2;
-  border: none;
-  padding: 2px 8px;
-  font: inherit;
-  font-size: 0.85em;
-  cursor: pointer;
-  border-radius: 3px;
-}
-.mode-button.active {
-  background: var(--page-primary);
-  color: white;
-}
-
-.catalog,
-.detail {
-  overflow-y: auto;
-  background: white;
-  border-left: 1px solid var(--page-border);
-}
-.catalog {
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-}
-.catalog .filter {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-.detail {
-  padding: 1rem;
-}
-
-.install-section {
-  margin-top: 1rem;
-}
-.install-label {
-  margin-bottom: 0.5rem;
-  font-size: 0.9em;
-  color: var(--page-faint);
-}
-.install-cmd {
-  background: #0c1014;
-  color: #dde4ea;
-  padding: 0.75rem;
-  border-radius: 6px;
-  font-family: ui-monospace, monospace;
-  font-size: 0.9em;
-  overflow-x: auto;
-  user-select: all;
-}
-.install-cmd::before {
-  content: "$ ";
-  color: var(--page-faint);
-}
-
-@media (max-width: 1100px) {
-  .page-main {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 50% 50%;
-  }
-  .preview-pane {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: 700px) {
-  .page-main {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-  }
-  .preview-pane {
-    aspect-ratio: 16 / 10;
-  }
-  .catalog,
-  .detail {
-    border-left: none;
-    border-top: 1px solid var(--page-border);
-  }
+  --font-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    color: #dde4ea;
-    background: #181c20;
-  }
-  .page-header,
-  .catalog,
-  .detail {
-    background: #1f2429;
+    --color-page-bg: #181c20;
+    --color-page-fg: #dde4ea;
+    --color-page-muted: #2a3138;
+    --color-page-border: #3a434c;
+    --color-page-primary: #7ba0bd;
+    --color-page-primary-fg: #0c1014;
+    --color-page-faint: #8c9099;
+    --color-page-danger: #f4a4a0;
+    --color-page-success: #95d6aa;
   }
 }
+
+@layer base {
+  html,
+  body {
+    margin: 0;
+    height: 100%;
+  }
+
+  body {
+    color: var(--color-page-fg);
+    background: var(--color-page-bg);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+/* Fake-desktop styles — component-specific, var-injection driven. Not
+ * utility-fightable; lives outside Tailwind's utility-first space. */
+@import "@rice-registry/shared/styles/fake-desktop.css";

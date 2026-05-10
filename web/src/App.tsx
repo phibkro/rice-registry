@@ -1,4 +1,4 @@
-import { createMemo, createResource, createSignal, Show } from "solid-js";
+import { createEffect, createResource, createSignal, Show } from "solid-js";
 import type { Mode, RegistryIndex, RegistryItem } from "@rice-registry/shared";
 import { FakeDesktop } from "@rice-registry/shared/components/FakeDesktop";
 import { FilterBar } from "@rice-registry/shared/components/FilterBar";
@@ -25,21 +25,20 @@ export function App() {
   const [mode, setMode] = createSignal<Mode>("dark");
 
   const [registry] = createResource(fetchRegistry);
+  const [selectedItem] = createResource(selectedName, fetchItem);
 
-  const [selectedItem] = createResource(selectedName, async (name) => {
-    if (!name) return null;
-    const item = await fetchItem(name);
-    if (item.type === "registry:theme") setActiveTheme(item);
-    return item;
-  });
-
-  // On first load, default-select the first registry:theme so the preview
-  // pane lands on something intentional rather than the CSS fallback.
-  createMemo(() => {
+  createEffect(() => {
     const reg = registry();
     if (!reg || selectedName()) return;
     const firstTheme = reg.items.find((it) => it.type === "registry:theme");
     if (firstTheme) setSelectedName(firstTheme.name);
+  });
+
+  createEffect(() => {
+    const item = selectedItem();
+    if (item && item.type === "registry:theme") {
+      setActiveTheme(item);
+    }
   });
 
   const installCmd = (item: RegistryItem) => {
@@ -51,14 +50,14 @@ export function App() {
   };
 
   return (
-    <>
-      <header class="page-header">
-        <div class="brand">
-          <strong>rice-registry</strong>
-          <span class="tagline">declarative ricing, MySpace-feel</span>
+    <div class="grid grid-rows-[auto_1fr] h-screen text-page-fg bg-page-bg">
+      <header class="flex items-center gap-4 px-5 py-3 border-b border-page-border bg-page-bg/60">
+        <div class="flex gap-2 items-baseline flex-1">
+          <strong class="font-semibold tracking-tight">rice-registry</strong>
+          <span class="text-page-faint text-sm">declarative ricing, MySpace-feel</span>
         </div>
         <a
-          class="repo"
+          class="text-page-faint text-sm no-underline hover:text-page-primary"
           href="https://github.com/phibkro/rice-registry"
           target="_blank"
           rel="noreferrer"
@@ -67,27 +66,35 @@ export function App() {
         </a>
       </header>
 
-      <main class="page-main">
-        <section class="preview-pane">
-          <div class="preview-toolbar">
-            <span class="preview-label">live preview</span>
-            <div class="mode-toggle">
+      <main class="grid grid-cols-[1fr_minmax(280px,1fr)_minmax(280px,1fr)] overflow-hidden min-h-0 max-[1100px]:grid-cols-[1fr_1fr] max-[1100px]:grid-rows-[50%_50%] max-[700px]:grid-cols-[1fr] max-[700px]:grid-rows-[auto_auto_auto]">
+        <section class="flex flex-col bg-[#2a2f33] overflow-hidden min-h-0 max-[1100px]:col-span-full max-[700px]:aspect-[16/10]">
+          <div class="flex items-center gap-3 px-3 py-2 bg-[#1f2429] text-[#c4ccd2] text-sm border-b border-[#0c1014]">
+            <span class="font-medium">live preview</span>
+            <div class="flex gap-0.5 bg-[#0c1014] rounded p-0.5">
               <button
-                class="mode-button"
-                classList={{ active: mode() === "light" }}
+                type="button"
+                class="px-2 py-0.5 text-xs rounded cursor-pointer transition-colors"
+                classList={{
+                  "bg-page-primary text-white": mode() === "light",
+                  "bg-transparent text-[#c4ccd2]": mode() !== "light",
+                }}
                 onClick={() => setMode("light")}
               >
                 light
               </button>
               <button
-                class="mode-button"
-                classList={{ active: mode() === "dark" }}
+                type="button"
+                class="px-2 py-0.5 text-xs rounded cursor-pointer transition-colors"
+                classList={{
+                  "bg-page-primary text-white": mode() === "dark",
+                  "bg-transparent text-[#c4ccd2]": mode() !== "dark",
+                }}
                 onClick={() => setMode("dark")}
               >
                 dark
               </button>
             </div>
-            <span class="preview-hint">click an item below to apply</span>
+            <span class="ml-auto text-page-faint">click an item to apply</span>
           </div>
           <FakeDesktop
             activeTheme={activeTheme()}
@@ -96,19 +103,24 @@ export function App() {
           />
         </section>
 
-        <section class="catalog">
-          <FilterBar
-            targets={machineTargets()}
-            type={typeFilter()}
-            onAddTarget={(t) => setMachineTargets(new Set([...machineTargets(), t]))}
-            onRemoveTarget={(t) => {
-              const next = new Set(machineTargets());
-              next.delete(t);
-              setMachineTargets(next);
-            }}
-            onTypeChange={setTypeFilter}
-          />
-          <Show when={!registry.error} fallback={<div class="error">{String(registry.error)}</div>}>
+        <section class="flex flex-col overflow-y-auto bg-page-bg/30 border-l border-page-border max-[700px]:border-l-0 max-[700px]:border-t">
+          <div class="sticky top-0 z-10">
+            <FilterBar
+              targets={machineTargets()}
+              type={typeFilter()}
+              onAddTarget={(t) => setMachineTargets(new Set([...machineTargets(), t]))}
+              onRemoveTarget={(t) => {
+                const next = new Set(machineTargets());
+                next.delete(t);
+                setMachineTargets(next);
+              }}
+              onTypeChange={setTypeFilter}
+            />
+          </div>
+          <Show
+            when={!registry.error}
+            fallback={<div class="p-4 text-page-danger italic">{String(registry.error)}</div>}
+          >
             <ItemList
               registry={registry() ?? null}
               selectedName={selectedName()}
@@ -119,19 +131,21 @@ export function App() {
           </Show>
         </section>
 
-        <aside class="detail">
+        <aside class="overflow-y-auto bg-page-bg/30 border-l border-page-border p-4 max-[700px]:border-l-0 max-[700px]:border-t">
           <ItemDetail
             item={selectedItem() ?? null}
             machineTargets={machineTargets()}
             action={(item) => (
-              <div class="install-section">
-                <p class="install-label">install via the local app:</p>
-                <div class="install-cmd">{installCmd(item)}</div>
+              <div class="mt-4">
+                <p class="mb-2 text-xs text-page-faint">install via the local app:</p>
+                <div class="bg-[#0c1014] text-[#dde4ea] px-3 py-2.5 rounded-md font-mono text-sm overflow-x-auto select-all before:content-['$_'] before:text-page-faint">
+                  {installCmd(item)}
+                </div>
               </div>
             )}
           />
         </aside>
       </main>
-    </>
+    </div>
   );
 }

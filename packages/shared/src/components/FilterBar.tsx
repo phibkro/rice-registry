@@ -28,20 +28,26 @@ export function FilterBar(props: Props) {
   };
 
   return (
-    <div class="filter">
-      <span class="filter-label">filter by your stack</span>
-      <div class="tags">
+    <div class="flex flex-col gap-2 px-4 py-3 border-b border-page-border bg-page-bg/60">
+      <span class="text-xs text-page-faint">filter by your stack</span>
+
+      <div class="flex flex-wrap gap-1">
         <For each={[...props.targets]}>
           {(t) => (
-            <span class="pill" onClick={() => props.onRemoveTarget(t)}>
+            <button
+              type="button"
+              class="bg-page-primary text-page-primary-fg rounded-full px-2 py-0.5 text-xs cursor-pointer select-none flex items-center gap-1 hover:brightness-105"
+              onClick={() => props.onRemoveTarget(t)}
+            >
               {t}
-              <span class="x">×</span>
-            </span>
+              <span class="opacity-70">×</span>
+            </button>
           )}
         </For>
       </div>
+
       <input
-        class="target-input"
+        class="border border-page-border rounded-md px-2 py-1 bg-page-bg/40 text-page-fg text-sm placeholder:text-page-faint/70 focus:outline-none focus:border-page-primary"
         placeholder="add tag (e.g. hyprland) ↵"
         autocomplete="off"
         spellcheck={false}
@@ -54,8 +60,9 @@ export function FilterBar(props: Props) {
           }
         }}
       />
+
       <select
-        class="type-filter"
+        class="border border-page-border rounded-md px-2 py-1 bg-page-bg/40 text-page-fg text-sm focus:outline-none focus:border-page-primary"
         value={props.type}
         onChange={(e) => props.onTypeChange(e.currentTarget.value)}
       >

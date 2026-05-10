@@ -1,8 +1,6 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
 
-import "@rice-registry/shared/styles/shell.css";
-import "@rice-registry/shared/styles/fake-desktop.css";
 import "./styles.css";
 
 import { App } from "./App.tsx";

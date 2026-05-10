@@ -31,7 +31,6 @@ export function App() {
   const [registry] = createResource(fetchRegistry);
   const [selectedItem] = createResource(selectedName, fetchItem);
 
-  // Default-select the first registry:theme on load.
   createEffect(() => {
     const reg = registry();
     if (!reg || selectedName()) return;
@@ -39,8 +38,6 @@ export function App() {
     if (firstTheme) setSelectedName(firstTheme.name);
   });
 
-  // Keep activeTheme in sync — whenever the selected item resolves and is a
-  // theme, swap the preview palette.
   createEffect(() => {
     const item = selectedItem();
     if (item && item.type === "registry:theme") {
@@ -48,7 +45,6 @@ export function App() {
     }
   });
 
-  // Clear last CLI output when the selection changes.
   createEffect(() => {
     selectedName();
     setCliResult(null);
@@ -69,22 +65,29 @@ export function App() {
   };
 
   return (
-    <>
-      <header class="page-header">
-        <div class="brand">
-          <strong>rice-registry</strong>
-        </div>
-        <div class="mode-toggle">
+    <div class="grid grid-rows-[auto_1fr_auto] h-screen text-page-fg bg-page-bg">
+      {/* ───── Header ───── */}
+      <header class="flex items-center gap-4 px-4 py-2 border-b border-page-border bg-page-bg/60">
+        <strong class="font-semibold tracking-tight flex-1">rice-registry</strong>
+        <div class="flex gap-0.5 bg-page-muted rounded p-0.5">
           <button
-            class="mode-button"
-            classList={{ active: mode() === "light" }}
+            type="button"
+            class="px-2.5 py-0.5 text-xs rounded cursor-pointer transition-colors"
+            classList={{
+              "bg-page-primary text-page-primary-fg": mode() === "light",
+              "text-page-fg hover:bg-page-bg/40": mode() !== "light",
+            }}
             onClick={() => setMode("light")}
           >
             light
           </button>
           <button
-            class="mode-button"
-            classList={{ active: mode() === "dark" }}
+            type="button"
+            class="px-2.5 py-0.5 text-xs rounded cursor-pointer transition-colors"
+            classList={{
+              "bg-page-primary text-page-primary-fg": mode() === "dark",
+              "text-page-fg hover:bg-page-bg/40": mode() !== "dark",
+            }}
             onClick={() => setMode("dark")}
           >
             dark
@@ -92,8 +95,9 @@ export function App() {
         </div>
       </header>
 
-      <main class="page-main">
-        <aside class="sidebar">
+      {/* ───── Main: sidebar + preview ───── */}
+      <main class="grid grid-cols-[320px_1fr] overflow-hidden min-h-0">
+        <aside class="flex flex-col bg-page-bg/30 border-r border-page-border overflow-hidden min-h-0">
           <FilterBar
             targets={machineTargets()}
             type={typeFilter()}
@@ -105,18 +109,23 @@ export function App() {
             }}
             onTypeChange={setTypeFilter}
           />
-          <Show when={!registry.error} fallback={<div class="error">{String(registry.error)}</div>}>
-            <ItemList
-              registry={registry() ?? null}
-              selectedName={selectedName()}
-              machineTargets={machineTargets()}
-              typeFilter={typeFilter()}
-              onSelect={setSelectedName}
-            />
-          </Show>
+          <div class="flex-1 overflow-y-auto min-h-0">
+            <Show
+              when={!registry.error}
+              fallback={<div class="p-4 text-page-danger italic">{String(registry.error)}</div>}
+            >
+              <ItemList
+                registry={registry() ?? null}
+                selectedName={selectedName()}
+                machineTargets={machineTargets()}
+                typeFilter={typeFilter()}
+                onSelect={setSelectedName}
+              />
+            </Show>
+          </div>
         </aside>
 
-        <section class="preview-pane">
+        <section class="flex flex-col bg-[#2a2f33] overflow-hidden min-h-0">
           <FakeDesktop
             activeTheme={activeTheme()}
             selected={selectedItem() ?? null}
@@ -125,55 +134,65 @@ export function App() {
         </section>
       </main>
 
-      <footer class="page-footer">
-        <Show when={selectedItem()} fallback={<p class="hint">select an item from the catalog</p>}>
+      {/* ───── Footer ───── */}
+      <footer class="bg-page-bg/30 border-t border-page-border px-4 py-3 max-h-[40vh] overflow-y-auto flex flex-col gap-2">
+        <Show
+          when={selectedItem()}
+          fallback={<p class="italic text-page-faint">select an item from the catalog</p>}
+        >
           {(item) => {
             const installable = () => isInstallable(item().targets, machineTargets());
             return (
               <>
-                <div class="footer-info">
-                  <div class="footer-title">
-                    <strong>{item().title ?? item().name}</strong>
-                    <span class="type">{item().type}</span>
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-baseline flex-wrap gap-2">
+                    <strong class="text-base">{item().title ?? item().name}</strong>
+                    <span class="font-mono text-xs text-page-faint">{item().type}</span>
                     <Show when={item().author}>
-                      <span class="muted">by {item().author}</span>
+                      <span class="text-xs text-page-faint">by {item().author}</span>
                     </Show>
                   </div>
                   <Show when={item().description}>
-                    <p class="footer-desc">{item().description}</p>
+                    <p class="text-sm text-page-fg/80 m-0">{item().description}</p>
                   </Show>
-                  <div class="footer-meta">
+                  <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs font-mono">
                     <span>
-                      <span class="muted">targets:</span> {(item().targets ?? ["any"]).join(", ")}
+                      <span class="text-page-faint font-sans">targets:</span>{" "}
+                      {(item().targets ?? ["any"]).join(", ")}
                     </span>
                     <Show when={item().slots?.provides?.length}>
                       <span>
-                        <span class="muted">provides:</span> {item().slots?.provides?.join(", ")}
+                        <span class="text-page-faint font-sans">provides:</span>{" "}
+                        {item().slots?.provides?.join(", ")}
                       </span>
                     </Show>
                     <Show when={item().slots?.consumes?.length}>
                       <span>
-                        <span class="muted">consumes:</span> {item().slots?.consumes?.join(", ")}
+                        <span class="text-page-faint font-sans">consumes:</span>{" "}
+                        {item().slots?.consumes?.join(", ")}
                       </span>
                     </Show>
                     <Show when={item().registryDependencies?.length}>
                       <span>
-                        <span class="muted">deps:</span> {item().registryDependencies?.join(", ")}
+                        <span class="text-page-faint font-sans">deps:</span>{" "}
+                        {item().registryDependencies?.join(", ")}
                       </span>
                     </Show>
                   </div>
                 </div>
 
-                <div class="footer-actions">
+                <div class="flex gap-2 items-center">
                   <button
-                    class="btn-secondary"
+                    type="button"
+                    class="bg-page-muted text-page-fg border-0 px-3.5 py-1.5 rounded-md text-sm font-medium cursor-pointer transition-[filter] disabled:opacity-55 disabled:cursor-not-allowed hover:not-disabled:brightness-110"
                     disabled={running() !== null}
                     onClick={() => runCli("explain", item().name)}
                   >
                     {running() === "explain" ? "running…" : "Preview plan"}
                   </button>
                   <button
-                    class="btn-primary"
+                    type="button"
+                    class="bg-page-primary text-page-primary-fg border-0 px-3.5 py-1.5 rounded-md text-sm font-medium cursor-pointer transition-[filter] disabled:opacity-55 disabled:cursor-not-allowed hover:not-disabled:brightness-110"
                     disabled={!installable() || running() !== null}
                     onClick={() => runCli("apply", item().name)}
                     title={!installable() ? "Add machine targets to enable apply" : undefined}
@@ -188,21 +207,41 @@ export function App() {
 
                 <Show when={cliResult()}>
                   {(out) => {
-                    const success = out().result.exit_code === 0;
+                    const success = () => out().result.exit_code === 0;
                     return (
-                      <div class="cli-output" classList={{ success, failure: !success }}>
-                        <div class="cli-header">
-                          <span class="cli-badge">
-                            {success ? "✓" : "✗"} {out().kind} {success ? "ok" : "failed"}
+                      <div
+                        class="rounded-md overflow-hidden border"
+                        classList={{
+                          "border-page-success": success(),
+                          "border-page-danger": !success(),
+                        }}
+                      >
+                        <div
+                          class="flex items-center gap-2 px-3 py-1.5 text-sm"
+                          classList={{
+                            "bg-page-success/15 text-page-success": success(),
+                            "bg-page-danger/15 text-page-danger": !success(),
+                          }}
+                        >
+                          <span class="font-semibold">
+                            {success() ? "✓" : "✗"} {out().kind} {success() ? "ok" : "failed"}
                           </span>
-                          <span class="cli-exit">exit {out().result.exit_code ?? "?"}</span>
+                          <span class="ml-auto font-mono text-xs opacity-85">
+                            exit {out().result.exit_code ?? "?"}
+                          </span>
                         </div>
                         <Show when={out().result.stdout}>
-                          <pre class="cli-stdout">{out().result.stdout}</pre>
+                          <pre class="bg-[#0c1014] text-[#dde4ea] px-3 py-2 m-0 font-mono text-xs whitespace-pre-wrap break-words max-h-[200px] overflow-y-auto">
+                            {out().result.stdout}
+                          </pre>
                         </Show>
                         <Show when={out().result.stderr}>
-                          <div class="cli-stderr-label">stderr</div>
-                          <pre class="cli-stderr">{out().result.stderr}</pre>
+                          <div class="bg-[#2a2024] text-[#f4a4a0] px-3 py-1 text-[0.7rem] font-mono uppercase tracking-wider">
+                            stderr
+                          </div>
+                          <pre class="bg-[#0c1014] text-[#dde4ea] px-3 py-2 m-0 font-mono text-xs whitespace-pre-wrap break-words max-h-[200px] overflow-y-auto">
+                            {out().result.stderr}
+                          </pre>
                         </Show>
                       </div>
                     );
@@ -213,6 +252,6 @@ export function App() {
           }}
         </Show>
       </footer>
-    </>
+    </div>
   );
 }

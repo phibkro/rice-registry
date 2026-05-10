@@ -16,7 +16,9 @@
     "check": "oxlint && oxfmt --check"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4",
     "oxfmt": "^0",
-    "oxlint": "^1"
+    "oxlint": "^1",
+    "tailwindcss": "^4"
   }
 }
