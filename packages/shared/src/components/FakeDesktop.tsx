@@ -68,9 +68,7 @@ export function FakeDesktop(props: Props) {
                   <span class="fd-pill">registry:base</span>
                   <span class="fd-pill">hyprland</span>
                 </div>
-                <p class="fd-card-desc">
-                  cool, minimal hyprland rice. drop in and go.
-                </p>
+                <p class="fd-card-desc">cool, minimal hyprland rice. drop in and go.</p>
               </div>
               <div class="fd-card">
                 <div class="fd-card-title">mountain-mist</div>
@@ -88,12 +86,16 @@ export function FakeDesktop(props: Props) {
               <span class="title">terminal</span>
             </div>
             <div class="fd-win-body">
-              <div><span class="fd-prompt">$</span> nix-rice query --target hyprland</div>
+              <div>
+                <span class="fd-prompt">$</span> nix-rice query --target hyprland
+              </div>
               <div class="fd-dim">3/4 item(s) match</div>
-              <div class="fd-dim">  minimal-bar      registry:component</div>
-              <div class="fd-dim">  mountain-default registry:base</div>
-              <div class="fd-dim">  mountain-mist    registry:theme</div>
-              <div><span class="fd-prompt">$</span> <span class="fd-blink">█</span></div>
+              <div class="fd-dim"> minimal-bar registry:component</div>
+              <div class="fd-dim"> mountain-default registry:base</div>
+              <div class="fd-dim"> mountain-mist registry:theme</div>
+              <div>
+                <span class="fd-prompt">$</span> <span class="fd-blink">█</span>
+              </div>
             </div>
           </div>
         </div>
@@ -105,10 +107,7 @@ export function FakeDesktop(props: Props) {
   );
 }
 
-function varsToStyle(
-  cssVars: CssVars | undefined,
-  mode: Mode
-): Record<string, string> {
+function varsToStyle(cssVars: CssVars | undefined, mode: Mode): Record<string, string> {
   if (!cssVars) return {};
   const out: Record<string, string> = {};
   for (const [k, v] of Object.entries(cssVars.theme ?? {})) {

@@ -33,20 +33,20 @@ Revert = remove symlink. Install (persistent) additionally runs
 
 ## Side-by-side
 
-| Concept             | rice-cooker (Arch)                          | rice-registry (Nix)                              |
-|---------------------|---------------------------------------------|--------------------------------------------------|
-| Granularity         | atomic rice only                            | type taxonomy (`base`/`component`/`theme`/`font`/...) |
-| Source              | `repo` + `commit` (git ref)                 | inlined `files[].content`, or flake input        |
-| Apply mechanism     | clone + symlink                             | flake import + home-manager generation           |
-| Preview-without-commit | yes (symlink swap, original untouched)   | not yet — planned via nested compositor          |
-| Persistent install  | `yay -S` deps + symlink                     | `nh home switch` (atomic generation)             |
-| Rollback            | flat undo (revert)                          | timeline (any prior generation)                  |
-| Composition         | none (atomic)                               | `registryDependencies`                           |
-| Theming             | baked into rice                             | `cssVars` decoupled, `registry:theme` swappable  |
-| Substrate filter    | none (Arch + Hyprland + Quickshell hardcoded) | `targets[]` array                              |
-| Multi-machine sync  | reinstall manually                          | flake input update + switch                      |
-| Curation            | PR to single TOML                           | TBD — likely two-tier (verified + community)     |
-| Auth                | none — fully public                         | TBD                                              |
+| Concept                | rice-cooker (Arch)                            | rice-registry (Nix)                                   |
+| ---------------------- | --------------------------------------------- | ----------------------------------------------------- |
+| Granularity            | atomic rice only                              | type taxonomy (`base`/`component`/`theme`/`font`/...) |
+| Source                 | `repo` + `commit` (git ref)                   | inlined `files[].content`, or flake input             |
+| Apply mechanism        | clone + symlink                               | flake import + home-manager generation                |
+| Preview-without-commit | yes (symlink swap, original untouched)        | not yet — planned via nested compositor               |
+| Persistent install     | `yay -S` deps + symlink                       | `nh home switch` (atomic generation)                  |
+| Rollback               | flat undo (revert)                            | timeline (any prior generation)                       |
+| Composition            | none (atomic)                                 | `registryDependencies`                                |
+| Theming                | baked into rice                               | `cssVars` decoupled, `registry:theme` swappable       |
+| Substrate filter       | none (Arch + Hyprland + Quickshell hardcoded) | `targets[]` array                                     |
+| Multi-machine sync     | reinstall manually                            | flake input update + switch                           |
+| Curation               | PR to single TOML                             | TBD — likely two-tier (verified + community)          |
+| Auth                   | none — fully public                           | TBD                                                   |
 
 ## Should our output emit their format?
 
@@ -59,9 +59,10 @@ models:
   QML, Nix expressions). Apply = home-manager generation.
 
 A registry item with `registryDependencies: ["minimal-bar", "mountain-mist"]`
-+ inlined `cssVars` has no representation in their schema — there's no
-composition primitive on their side, and they don't ship palettes
-separately from rices. A `registry:theme` is meaningless to them.
+
+- inlined `cssVars` has no representation in their schema — there's no
+  composition primitive on their side, and they don't ship palettes
+  separately from rices. A `registry:theme` is meaningless to them.
 
 ## What does make sense
 
@@ -71,17 +72,17 @@ Three integration paths, ordered by feasibility:
 
 Each rice-cooker entry maps to a `registry:base` in our format:
 
-| Their field        | Our field                                       |
-|--------------------|-------------------------------------------------|
-| `[name]` table key | `name`                                          |
-| `display_name`     | `title`                                         |
-| `creator_name`     | `author`                                        |
-| `repo` + `commit`  | new `source.git = { url, ref }` field, or fetched-flake input |
-| `symlink_src/dst`  | activation hook in generated `homeModule`       |
+| Their field        | Our field                                                                     |
+| ------------------ | ----------------------------------------------------------------------------- |
+| `[name]` table key | `name`                                                                        |
+| `display_name`     | `title`                                                                       |
+| `creator_name`     | `author`                                                                      |
+| `repo` + `commit`  | new `source.git = { url, ref }` field, or fetched-flake input                 |
+| `symlink_src/dst`  | activation hook in generated `homeModule`                                     |
 | `install_deps`     | `nixpkgsDependencies` (best-effort name mapping; some Arch names won't exist) |
-| `package_managed`  | discarded — Nix is always package-managed       |
-| (always)           | `targets: ["hyprland", "quickshell", "wayland"]` |
-| (always)           | `type: "registry:base"`                         |
+| `package_managed`  | discarded — Nix is always package-managed                                     |
+| (always)           | `targets: ["hyprland", "quickshell", "wayland"]`                              |
+| (always)           | `type: "registry:base"`                                                       |
 
 Lossy on the install-deps mapping, but bootstraps content. Worth ~50 LoC
 to add to the CLI. Punt until we have a reason to actually pull their
@@ -89,8 +90,8 @@ content (e.g. demo material for the website).
 
 ### 2. Manifest spec convergence
 
-Their `catalog.toml` header says *"We recommend packaging your rice with
-nix flakes. Rice cooker will be updated to support them soon."* — they're
+Their `catalog.toml` header says _"We recommend packaging your rice with
+nix flakes. Rice cooker will be updated to support them soon."_ — they're
 open to a Nix path. Worth filing an issue on their repo with a sketch of
 a manifest spec both can target. The schema would be a superset of theirs
 (our additional types + slots + cssVars + registryDependencies). Rice-cooker
@@ -118,8 +119,8 @@ a remote git ref rather than inlined in the registry. Sketch:
     "type": "git",
     "url": "https://github.com/example/rice",
     "ref": "<sha or tag>",
-    "subPath": "quickshell"
-  }
+    "subPath": "quickshell",
+  },
 }
 ```
 
@@ -130,8 +131,8 @@ Or a flake-input variant:
   "source": {
     "type": "flake",
     "url": "github:example/rice",
-    "rev": "<sha>"
-  }
+    "rev": "<sha>",
+  },
 }
 ```
 

@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '.tool_input.file_path // empty'); if [ -n \"$f\" ] && [ -f \"$f\" ]; then bun x --bun oxfmt \"$f\" >/dev/null 2>&1 || true; out=$(bun x --bun oxlint \"$f\" 2>&1); echo \"$out\" | grep -qE '0 warnings and 0 errors' || echo \"$out\"; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

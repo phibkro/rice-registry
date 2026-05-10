@@ -27,11 +27,18 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Lint (oxlint)
+        run: bun x oxlint
+
+      - name: Format check (oxfmt)
+        run: bun x oxfmt --check
+
       - name: Build registry artifacts
         run: bun cli/src/index.ts build
 
       - name: Build web showcase
-        run: bun --filter rice-registry-web run build
+        working-directory: web
+        run: bun run build
 
       - uses: actions/configure-pages@v5
 

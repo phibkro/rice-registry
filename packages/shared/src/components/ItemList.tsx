@@ -19,9 +19,7 @@ export function ItemList(props: Props) {
   });
 
   const matchedCount = createMemo(
-    () =>
-      filtered().filter((it) => isInstallable(it.targets, props.machineTargets))
-        .length
+    () => filtered().filter((it) => isInstallable(it.targets, props.machineTargets)).length
   );
 
   return (
@@ -36,9 +34,7 @@ export function ItemList(props: Props) {
       </Show>
       <For each={filtered()}>
         {(it) => {
-          const installable = createMemo(() =>
-            isInstallable(it.targets, props.machineTargets)
-          );
+          const installable = createMemo(() => isInstallable(it.targets, props.machineTargets));
           return (
             <div
               class="item"

@@ -1,10 +1,6 @@
 import { createMemo, createResource, createSignal, Show } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
-import type {
-  Mode,
-  RegistryIndex,
-  RegistryItem,
-} from "@rice-registry/shared";
+import type { Mode, RegistryIndex, RegistryItem } from "@rice-registry/shared";
 import { isInstallable } from "@rice-registry/shared";
 import { FakeDesktop } from "@rice-registry/shared/components/FakeDesktop";
 import { FilterBar } from "@rice-registry/shared/components/FilterBar";
@@ -108,10 +104,7 @@ export function App() {
             }}
             onTypeChange={setTypeFilter}
           />
-          <Show
-            when={!registry.error}
-            fallback={<div class="error">{String(registry.error)}</div>}
-          >
+          <Show when={!registry.error} fallback={<div class="error">{String(registry.error)}</div>}>
             <ItemList
               registry={registry() ?? null}
               selectedName={selectedName()}
@@ -138,8 +131,8 @@ export function App() {
                     {applying()
                       ? "running…"
                       : installable
-                      ? "Apply (stub)"
-                      : "Not installable on this machine"}
+                        ? "Apply (stub)"
+                        : "Not installable on this machine"}
                   </button>
                   <Show when={applyResult()}>
                     {(result) => (

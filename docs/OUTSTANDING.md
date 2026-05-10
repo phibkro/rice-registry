@@ -49,7 +49,7 @@ for the planned sequence. Steps to land:
       implemented.
 - [ ] Wallpaper-as-content-addressed-fetch (`registry:wallpaper`). Schema
       already has the type; no example yet. Need a `source: { type: "fetch",
-      url, hash }` field for items that ship binary content via Nix
+url, hash }` field for items that ship binary content via Nix
       fetches rather than inlined.
 
 ## Hosting
@@ -88,7 +88,7 @@ for the planned sequence. Steps to land:
 - [ ] Network registry support — currently reads from the local repo
       only. Eventually fetch from a remote registry URL.
 - [ ] Bundle / package — first run is `nix develop && cd app && bun
-      install && bun run tauri dev`. For end users we want a NixOS
+install && bun run tauri dev`. For end users we want a NixOS
       package + AppImage / .deb / .rpm.
 
 ## Snapshot-current-config-as-rice
@@ -115,13 +115,14 @@ Far from blocking but worth thinking about:
 ## Cross-substrate items
 
 Items that target multiple substrates (e.g. a palette that ships both GTK
-+ Qt + Hyprland adapters). Stylix's `stylix.targets.<X>` is the working
-pattern.
 
-- [ ] Schema: `variants` map from substrate-tag → file-set / module-path.
-- [ ] Authoring example: a single palette item with variants for gtk,
+- Qt + Hyprland adapters). Stylix's `stylix.targets.<X>` is the working
+  pattern.
+
+* [ ] Schema: `variants` map from substrate-tag → file-set / module-path.
+* [ ] Authoring example: a single palette item with variants for gtk,
       qt, and hyprland.
-- [ ] Rule-of-three guard — wait until we have three concrete cross-
+* [ ] Rule-of-three guard — wait until we have three concrete cross-
       substrate items before extracting the abstraction.
 
 ## Lints

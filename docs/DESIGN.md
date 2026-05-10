@@ -82,20 +82,20 @@ Nix-native extensions:
 
 Type taxonomy:
 
-| Type | Purpose |
-|------|---------|
-| `registry:base` | Whole rice — bundles everything else |
-| `registry:component` | Composed unit (bar, launcher, sidebar) |
-| `registry:ui` | Atomic primitive (workspace pill, clock widget) |
-| `registry:layout` | Bar arrangement, panel positions |
-| `registry:theme` | Palette values |
-| `registry:style` | "Skin" — radius / density / glass-vs-flat |
-| `registry:font` | Typeface bundle |
-| `registry:wallpaper` | Single image (or content-addressed pack) |
-| `registry:soundpack` | Audio cues |
-| `registry:animation` | Hyprland animation set |
-| `registry:lib` | Helper modules |
-| `registry:file` | Misc |
+| Type                 | Purpose                                         |
+| -------------------- | ----------------------------------------------- |
+| `registry:base`      | Whole rice — bundles everything else            |
+| `registry:component` | Composed unit (bar, launcher, sidebar)          |
+| `registry:ui`        | Atomic primitive (workspace pill, clock widget) |
+| `registry:layout`    | Bar arrangement, panel positions                |
+| `registry:theme`     | Palette values                                  |
+| `registry:style`     | "Skin" — radius / density / glass-vs-flat       |
+| `registry:font`      | Typeface bundle                                 |
+| `registry:wallpaper` | Single image (or content-addressed pack)        |
+| `registry:soundpack` | Audio cues                                      |
+| `registry:animation` | Hyprland animation set                          |
+| `registry:lib`       | Helper modules                                  |
+| `registry:file`      | Misc                                            |
 
 ### Slot semantics — pinned
 
@@ -111,7 +111,7 @@ can fill (the bar, the launcher, the lockscreen). Items declare:
 - **`conflicts: [slot...]`** — explicit additional slots this item
   conflicts with beyond what `provides` already implies. Most items leave
   this empty; it exists for unusual cases (e.g. an item that doesn't
-  *provide* a bar but is incompatible with one).
+  _provide_ a bar but is incompatible with one).
 
 Canonical slot vocabulary (extend with care):
 
@@ -139,7 +139,7 @@ Resolver behavior on conflict:
    a clear error naming both.
 2. If a `consumes` requirement isn't satisfied by any installed item,
    abort install.
-3. The resolver works against the user's *current* set of installed items,
+3. The resolver works against the user's _current_ set of installed items,
    not just the new transitive closure being installed. Installing `mountain-default` while `caelestia` is already installed must check
    `mountain-default.provides ∩ caelestia.provides`, not just check within
    the new install.
@@ -192,16 +192,16 @@ The registry distributes **code** (in NixOS terms — declarative, in /nix/store
 re-derivable). User **data** lives outside the registry on btrfs/restic-managed
 paths.
 
-| Code (registry, flake, /nix/store)                | Data (user dirs, snapshots, restic)         |
-|---------------------------------------------------|---------------------------------------------|
-| Hyprland keybinds, animations, gaps, window rules | Wallpaper image files                       |
-| Bar/widget composition + layout                   | Custom .otf/.ttf font files (paid/private)  |
-| Color palette **values**                          | Cursor sprite files                         |
-| Font **selection** + sizes + variants             | Icon pack PNG/SVG files                     |
-| Cursor / icon / sound theme **names**             | Sound files (alerts, login chimes)          |
-| App-selection (which apps are themed)             | Screenshots taken with the rice             |
-| Stylix config                                     | Generation history thumbnails               |
-| Tiling rules, borders                             | Quickshell embedded asset blobs             |
+| Code (registry, flake, /nix/store)                | Data (user dirs, snapshots, restic)        |
+| ------------------------------------------------- | ------------------------------------------ |
+| Hyprland keybinds, animations, gaps, window rules | Wallpaper image files                      |
+| Bar/widget composition + layout                   | Custom .otf/.ttf font files (paid/private) |
+| Color palette **values**                          | Cursor sprite files                        |
+| Font **selection** + sizes + variants             | Icon pack PNG/SVG files                    |
+| Cursor / icon / sound theme **names**             | Sound files (alerts, login chimes)         |
+| App-selection (which apps are themed)             | Screenshots taken with the rice            |
+| Stylix config                                     | Generation history thumbnails              |
+| Tiling rules, borders                             | Quickshell embedded asset blobs            |
 
 Hybrid cases:
 
@@ -210,8 +210,8 @@ Hybrid cases:
   user data, sync via Syncthing or similar.
 - **Fonts**: nixpkgs fonts → code (derivation reference). Private/purchased
   fonts → user data.
-- **Palettes from wallpaper** (matugen): the *generator* is code; the
-  *input wallpaper* is data; the resulting palette is derived (reproducible
+- **Palettes from wallpaper** (matugen): the _generator_ is code; the
+  _input wallpaper_ is data; the resulting palette is derived (reproducible
   if the wallpaper is content-addressed).
 
 The cross-machine sync story falls out of this split:
@@ -301,7 +301,7 @@ repo's stable. Decide before encouraging external publishers.
 Worth keeping a light eye on:
 
 - shadcn registry schema evolution (their changelog drove `registry:base`
-  + first-class fonts). Worth re-reading every few months and absorbing.
+  - first-class fonts). Worth re-reading every few months and absorbing.
 - Quickshell — substrate is young; breaking changes possible.
 - Hyprland — version compatibility constraints on items will move with
   upstream.

@@ -1,7 +1,7 @@
 {
   "name": "rice-registry-web",
-  "private": true,
   "version": "0.1.0",
+  "private": true,
   "type": "module",
   "scripts": {
     "predev": "bun scripts/copy-registry.ts",

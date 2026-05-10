@@ -2,10 +2,10 @@
   "name": "nix-rice",
   "version": "0.1.0",
   "description": "CLI for the rice registry — build / validate / add (stub).",
-  "type": "module",
   "bin": {
     "nix-rice": "src/index.ts"
   },
+  "type": "module",
   "scripts": {
     "build": "bun src/index.ts build",
     "validate": "bun src/index.ts validate",

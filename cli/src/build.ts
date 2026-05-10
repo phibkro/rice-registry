@@ -123,11 +123,7 @@ export async function build(opts: { root: string; out: string }): Promise<void> 
     process.exit(1);
   }
 
-  await writeFile(
-    join(out, "registry.json"),
-    JSON.stringify(index, null, 2) + "\n",
-    "utf-8"
-  );
+  await writeFile(join(out, "registry.json"), JSON.stringify(index, null, 2) + "\n", "utf-8");
 
   console.log(`\nbuild: wrote registry.json + ${index.items.length} item(s) to ${out}`);
 }

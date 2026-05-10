@@ -9,10 +9,7 @@
   "version": "0.1.0",
   "categories": ["rice", "minimal", "cool"],
   "targets": ["hyprland", "quickshell", "wayland"],
-  "registryDependencies": [
-    "mountain-mist",
-    "minimal-bar"
-  ],
+  "registryDependencies": ["mountain-mist", "minimal-bar"],
   "compatibility": {
     "hyprland": ">=0.45",
     "quickshell": ">=0.4",

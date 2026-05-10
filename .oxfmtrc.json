@@ -1,0 +1,23 @@
+{
+  "tabWidth": 2,
+  "useTabs": false,
+  "printWidth": 100,
+  "trailingComma": "es5",
+  "singleQuote": false,
+  "semi": true,
+  "endOfLine": "lf",
+  "insertFinalNewline": true,
+  "ignorePatterns": [
+    "node_modules/",
+    "dist/",
+    "target/",
+    "**/public/",
+    "r/",
+    "registry.json",
+    "schemas/",
+    "examples/**/*.qml",
+    "**/.vite/",
+    "bun.lock",
+    "**/bun.lock"
+  ]
+}

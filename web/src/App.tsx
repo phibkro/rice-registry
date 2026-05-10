@@ -1,9 +1,5 @@
 import { createMemo, createResource, createSignal, Show } from "solid-js";
-import type {
-  Mode,
-  RegistryIndex,
-  RegistryItem,
-} from "@rice-registry/shared";
+import type { Mode, RegistryIndex, RegistryItem } from "@rice-registry/shared";
 import { FakeDesktop } from "@rice-registry/shared/components/FakeDesktop";
 import { FilterBar } from "@rice-registry/shared/components/FilterBar";
 import { ItemList } from "@rice-registry/shared/components/ItemList";
@@ -61,7 +57,12 @@ export function App() {
           <strong>rice-registry</strong>
           <span class="tagline">declarative ricing, MySpace-feel</span>
         </div>
-        <a class="repo" href="https://github.com/phibkro/rice-registry" target="_blank" rel="noreferrer">
+        <a
+          class="repo"
+          href="https://github.com/phibkro/rice-registry"
+          target="_blank"
+          rel="noreferrer"
+        >
           github
         </a>
       </header>
@@ -107,10 +108,7 @@ export function App() {
             }}
             onTypeChange={setTypeFilter}
           />
-          <Show
-            when={!registry.error}
-            fallback={<div class="error">{String(registry.error)}</div>}
-          >
+          <Show when={!registry.error} fallback={<div class="error">{String(registry.error)}</div>}>
             <ItemList
               registry={registry() ?? null}
               selectedName={selectedName()}

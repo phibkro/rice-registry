@@ -16,9 +16,7 @@ function isInstallable(itemTargets: string[] | undefined, machine: string[]): bo
 }
 
 export async function query(opts: QueryOpts): Promise<void> {
-  const path = opts.registry.startsWith("http")
-    ? null
-    : resolve(opts.registry);
+  const path = opts.registry.startsWith("http") ? null : resolve(opts.registry);
 
   let index: RegistryIndex;
   if (path) {

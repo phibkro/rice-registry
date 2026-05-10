@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# rice-registry pre-commit hook.
+#
+# Enforces formatting + lint cleanliness. Bypass with `git commit --no-verify`
+# in genuine emergencies only.
+#
+# Activate once per clone: git config core.hooksPath .githooks
+
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+# If bun isn't on PATH (e.g. committing from a host without the dev shell),
+# skip rather than block. The CI workflow catches the same checks on push.
+if ! command -v bun >/dev/null 2>&1; then
+  echo "pre-commit: bun not on PATH; skipping (CI will catch it on push)."
+  exit 0
+fi
+
+# Only run if dev deps are installed.
+if [ ! -d node_modules/oxfmt ] || [ ! -d node_modules/oxlint ]; then
+  echo "pre-commit: dev deps missing; skipping. run 'bun install' to enable."
+  exit 0
+fi
+
+echo "→ oxfmt --check"
+if ! bun x oxfmt --check >/dev/null 2>&1; then
+  echo "✗ formatting issues. run 'bun run fmt' to fix."
+  bun x oxfmt --check
+  exit 1
+fi
+
+echo "→ oxlint"
+if ! bun x oxlint; then
+  echo "✗ lint failures. fix and retry."
+  exit 1
+fi
+
+echo "✓ pre-commit checks passed"

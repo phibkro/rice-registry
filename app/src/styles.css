@@ -1,14 +1,24 @@
 :root {
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-size: 14px;
   line-height: 1.5;
   color: #1c2227;
   background: #f4f6f8;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html, body { margin: 0; height: 100%; }
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
 
 #root {
   display: grid;
@@ -24,10 +34,21 @@ html, body { margin: 0; height: 100%; }
   border-bottom: 1px solid var(--page-border);
   background: white;
 }
-.brand { flex: 1; }
-.brand strong { font-weight: 600; letter-spacing: -0.01em; }
+.brand {
+  flex: 1;
+}
+.brand strong {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
 
-.mode-toggle { display: flex; gap: 2px; background: var(--page-muted); border-radius: 4px; padding: 2px; }
+.mode-toggle {
+  display: flex;
+  gap: 2px;
+  background: var(--page-muted);
+  border-radius: 4px;
+  padding: 2px;
+}
 .mode-button {
   background: transparent;
   color: var(--page-fg);
@@ -56,16 +77,29 @@ html, body { margin: 0; height: 100%; }
   overflow: hidden;
 }
 
-.catalog, .detail {
+.catalog,
+.detail {
   overflow-y: auto;
   background: white;
   border-left: 1px solid var(--page-border);
 }
-.catalog { display: flex; flex-direction: column; padding: 0; }
-.catalog .filter { position: sticky; top: 0; z-index: 10; }
-.detail { padding: 1rem; }
+.catalog {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+.catalog .filter {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.detail {
+  padding: 1rem;
+}
 
-.apply-section { margin-top: 1rem; }
+.apply-section {
+  margin-top: 1rem;
+}
 .apply-button {
   background: var(--page-primary);
   color: var(--page-primary-fg);
@@ -82,7 +116,9 @@ html, body { margin: 0; height: 100%; }
   color: var(--page-faint);
   cursor: not-allowed;
 }
-.apply-button:not(:disabled):hover { filter: brightness(1.05); }
+.apply-button:not(:disabled):hover {
+  filter: brightness(1.05);
+}
 
 .apply-output {
   background: #0c1014;
@@ -98,6 +134,13 @@ html, body { margin: 0; height: 100%; }
 }
 
 @media (prefers-color-scheme: dark) {
-  :root { color: #dde4ea; background: #181c20; }
-  .page-header, .catalog, .detail { background: #1f2429; }
+  :root {
+    color: #dde4ea;
+    background: #181c20;
+  }
+  .page-header,
+  .catalog,
+  .detail {
+    background: #1f2429;
+  }
 }

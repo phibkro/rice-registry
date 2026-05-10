@@ -111,10 +111,7 @@ export function detectConflicts(
   // Slot → items that provide it.
   const provides = new Map<string, string[]>();
   for (const it of all) {
-    for (const slot of [
-      ...(it.slots?.provides ?? []),
-      ...(it.slots?.conflicts ?? []),
-    ]) {
+    for (const slot of [...(it.slots?.provides ?? []), ...(it.slots?.conflicts ?? [])]) {
       const cur = provides.get(slot) ?? [];
       if (!cur.includes(it.name)) cur.push(it.name);
       provides.set(slot, cur);

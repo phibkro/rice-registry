@@ -1,11 +1,22 @@
 {
   "name": "rice-registry-workspace",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "workspaces": [
     "packages/*",
     "web",
     "app",
     "cli"
-  ]
+  ],
+  "scripts": {
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "check": "oxlint && oxfmt --check"
+  },
+  "devDependencies": {
+    "oxfmt": "^0",
+    "oxlint": "^1"
+  }
 }

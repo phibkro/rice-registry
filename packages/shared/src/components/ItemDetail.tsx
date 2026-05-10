@@ -13,14 +13,9 @@ type Props = {
 
 export function ItemDetail(props: Props) {
   return (
-    <Show
-      when={props.item}
-      fallback={<p class="hint">select an item</p>}
-    >
+    <Show when={props.item} fallback={<p class="hint">select an item</p>}>
       {(item) => {
-        const installable = createMemo(() =>
-          isInstallable(item().targets, props.machineTargets)
-        );
+        const installable = createMemo(() => isInstallable(item().targets, props.machineTargets));
 
         return (
           <div class="detail-body">
@@ -46,9 +41,7 @@ export function ItemDetail(props: Props) {
                 <Show
                   when={installable()}
                   fallback={
-                    <span class="not-installable">
-                      (not installable on current filter)
-                    </span>
+                    <span class="not-installable">(not installable on current filter)</span>
                   }
                 >
                   <span class="muted">(installable)</span>
@@ -61,9 +54,7 @@ export function ItemDetail(props: Props) {
                     {(d, i) => (
                       <>
                         <code>{d}</code>
-                        <Show when={i() < (item().registryDependencies?.length ?? 0) - 1}>
-                          ,{" "}
-                        </Show>
+                        <Show when={i() < (item().registryDependencies?.length ?? 0) - 1}>, </Show>
                       </>
                     )}
                   </For>
@@ -76,9 +67,7 @@ export function ItemDetail(props: Props) {
                     {(d, i) => (
                       <>
                         <code>{d}</code>
-                        <Show when={i() < (item().nixpkgsDependencies?.length ?? 0) - 1}>
-                          ,{" "}
-                        </Show>
+                        <Show when={i() < (item().nixpkgsDependencies?.length ?? 0) - 1}>, </Show>
                       </>
                     )}
                   </For>
@@ -110,7 +99,8 @@ export function ItemDetail(props: Props) {
                           {k} {v}
                         </code>
                         <Show when={i() < Object.keys(item().compatibility ?? {}).length - 1}>
-                          {" "}· {" "}
+                          {" "}
+                          ·{" "}
                         </Show>
                       </>
                     )}

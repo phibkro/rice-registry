@@ -54,6 +54,30 @@ docs/
 Workspace is bun-managed (`workspaces` in root package.json). One install
 at the root populates all sub-packages: `bun install` from the repo root.
 
+## Lint + format
+
+[oxlint](https://oxc.rs/docs/guide/usage/linter) + [oxfmt](https://oxc.rs/docs/guide/usage/formatter)
+(both from the [oxc](https://oxc.rs) project, ~50–100× faster than ESLint /
+~30× faster than Prettier).
+
+```sh
+bun run check        # oxlint + oxfmt --check
+bun run lint         # oxlint
+bun run lint:fix     # oxlint --fix
+bun run fmt          # oxfmt (write)
+bun run fmt:check    # oxfmt --check
+```
+
+Configs at `.oxlintrc.json` + `.oxfmtrc.json`. Pre-commit hook at
+`.githooks/pre-commit` blocks commits on lint or format failure;
+activate with `git config core.hooksPath .githooks` (already set in
+this clone). PostToolUse hook in `.claude/settings.json` runs both on
+every Edit/MultiEdit/Write so AI-edited files arrive formatted.
+
+The unified [Vite+ (`vp`)](https://viteplus.dev/) wraps these plus
+Vite/Vitest/Rolldown behind one CLI; it's optional and not currently
+in the dev shell. Underlying tools are what actually run.
+
 registry.json                generated index (committed for static hosting)
 r/                           generated per-item JSON (committed)
 flake.nix                    dev shell
@@ -139,24 +163,24 @@ without bloating the index. Pure static hosting; no backend required.
 
 Mirrors shadcn's `registry:*` namespace, extended for the desktop domain:
 
-| Type                  | Use                                                |
-|-----------------------|----------------------------------------------------|
-| `registry:base`       | A complete rice — bundles everything else          |
-| `registry:component`  | A composed unit (bar, launcher, sidebar)           |
-| `registry:ui`         | An atomic primitive (workspace pill, clock widget) |
-| `registry:layout`     | Bar arrangement, panel positions                   |
-| `registry:theme`      | Palette values (cssVars)                           |
-| `registry:style`      | "Skin" — radius / density / glass-vs-flat          |
-| `registry:font`       | A typeface bundle                                  |
-| `registry:wallpaper`  | A single image (or content-addressed pack)         |
-| `registry:soundpack`  | Audio cues (alerts, login chimes)                  |
-| `registry:animation`  | Hyprland animation set                             |
-| `registry:lib`        | Helper modules (matugen wrapper, screenshot util)  |
-| `registry:file`       | Misc                                               |
+| Type                 | Use                                                |
+| -------------------- | -------------------------------------------------- |
+| `registry:base`      | A complete rice — bundles everything else          |
+| `registry:component` | A composed unit (bar, launcher, sidebar)           |
+| `registry:ui`        | An atomic primitive (workspace pill, clock widget) |
+| `registry:layout`    | Bar arrangement, panel positions                   |
+| `registry:theme`     | Palette values (cssVars)                           |
+| `registry:style`     | "Skin" — radius / density / glass-vs-flat          |
+| `registry:font`      | A typeface bundle                                  |
+| `registry:wallpaper` | A single image (or content-addressed pack)         |
+| `registry:soundpack` | Audio cues (alerts, login chimes)                  |
+| `registry:animation` | Hyprland animation set                             |
+| `registry:lib`       | Helper modules (matugen wrapper, screenshot util)  |
+| `registry:file`      | Misc                                               |
 
 ### Decoupled theming via cssVars
 
-A `registry:component` references *semantic tokens* (`var(--primary)`,
+A `registry:component` references _semantic tokens_ (`var(--primary)`,
 `var(--background)`); a `registry:theme` sets values for those tokens at
 three scopes (`theme` shared, `light` overrides, `dark` overrides). Swap
 the theme, swap the values — components don't change. This is the
@@ -198,7 +222,7 @@ together is an error, not a coin flip.
 The registry distributes **code** (in NixOS terms): palettes, modules,
 QML, Hyprland keybinds. **Data** — your wallpapers, sounds, screenshots,
 history thumbnails — lives outside the registry on the user's
-btrfs/restic-managed paths. Wallpaper *packs* small enough to ship as Nix
+btrfs/restic-managed paths. Wallpaper _packs_ small enough to ship as Nix
 fetches can be `registry:wallpaper`; personal wallpapers are user data.
 
 ## What's not built yet
@@ -226,7 +250,7 @@ JSON for distribution; Nix as an authoring escape hatch for power users.
 
 ## Why not just use shadcn directly?
 
-shadcn copies files into your project. Nix needs *modules* that
+shadcn copies files into your project. Nix needs _modules_ that
 home-manager imports — installable as flake inputs, atomic via
 generations, rollbackable. The schema is shadcn-shaped; the apply
 mechanism is Nix-native.
