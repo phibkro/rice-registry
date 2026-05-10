@@ -28,7 +28,7 @@ export function FilterBar(props: Props) {
   };
 
   return (
-    <div class="flex flex-col gap-2 px-4 py-3 border-b border-page-border bg-page-bg/60">
+    <div class="flex flex-col gap-2 px-4 py-3 border-b border-page-border bg-page-surface">
       <span class="text-xs text-page-faint">filter by your stack</span>
 
       <div class="flex flex-wrap gap-1">
@@ -47,7 +47,7 @@ export function FilterBar(props: Props) {
       </div>
 
       <input
-        class="border border-page-border rounded-md px-2 py-1 bg-page-bg/40 text-page-fg text-sm placeholder:text-page-faint/70 focus:outline-none focus:border-page-primary"
+        class="border border-page-border rounded-md px-2 py-1 bg-page-bg text-page-fg text-sm placeholder:text-page-faint/70 focus:outline-none focus:border-page-primary"
         placeholder="add tag (e.g. hyprland) ↵"
         autocomplete="off"
         spellcheck={false}
@@ -62,7 +62,7 @@ export function FilterBar(props: Props) {
       />
 
       <select
-        class="border border-page-border rounded-md px-2 py-1 bg-page-bg/40 text-page-fg text-sm focus:outline-none focus:border-page-primary"
+        class="border border-page-border rounded-md px-2 py-1 bg-page-bg text-page-fg text-sm focus:outline-none focus:border-page-primary"
         value={props.type}
         onChange={(e) => props.onTypeChange(e.currentTarget.value)}
       >

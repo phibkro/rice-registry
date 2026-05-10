@@ -11,6 +11,7 @@
  */
 @theme {
   --color-page-bg: #f4f6f8;
+  --color-page-surface: #ffffff;
   --color-page-fg: #1c2227;
   --color-page-muted: #dde3e8;
   --color-page-border: #c4ccd2;
@@ -27,6 +28,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --color-page-bg: #181c20;
+    --color-page-surface: #1f2429;
     --color-page-fg: #dde4ea;
     --color-page-muted: #2a3138;
     --color-page-border: #3a434c;

@@ -9,14 +9,28 @@ import { ItemList } from "@rice-registry/shared/components/ItemList";
 type CliResult = { stdout: string; stderr: string; exit_code: number | null };
 type CliKind = "apply" | "explain";
 
+/** True when running inside the Tauri WebView. False when this same JS is
+ * accessed via a regular browser hitting localhost:1420. */
+const isTauri = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+
 async function fetchRegistry(): Promise<RegistryIndex> {
-  const json = await invoke<string>("read_registry");
-  return JSON.parse(json) as RegistryIndex;
+  if (isTauri) {
+    const json = await invoke<string>("read_registry");
+    return JSON.parse(json) as RegistryIndex;
+  }
+  const res = await fetch("/registry.json");
+  if (!res.ok) throw new Error(`registry.json: HTTP ${res.status}`);
+  return (await res.json()) as RegistryIndex;
 }
 
 async function fetchItem(name: string): Promise<RegistryItem> {
-  const json = await invoke<string>("read_item", { name });
-  return JSON.parse(json) as RegistryItem;
+  if (isTauri) {
+    const json = await invoke<string>("read_item", { name });
+    return JSON.parse(json) as RegistryItem;
+  }
+  const res = await fetch(`/r/${name}.json`);
+  if (!res.ok) throw new Error(`r/${name}.json: HTTP ${res.status}`);
+  return (await res.json()) as RegistryItem;
 }
 
 export function App() {
@@ -51,6 +65,18 @@ export function App() {
   });
 
   const runCli = async (kind: CliKind, name: string) => {
+    if (!isTauri) {
+      setCliResult({
+        kind,
+        result: {
+          stdout: "",
+          stderr:
+            "Apply / Preview-plan only work inside the Tauri app — they shell out to the local CLI.",
+          exit_code: null,
+        },
+      });
+      return;
+    }
     setRunning(kind);
     setCliResult(null);
     try {
@@ -67,15 +93,20 @@ export function App() {
   return (
     <div class="grid grid-rows-[auto_1fr_auto] h-screen text-page-fg bg-page-bg">
       {/* ───── Header ───── */}
-      <header class="flex items-center gap-4 px-4 py-2 border-b border-page-border bg-page-bg/60">
+      <header class="flex items-center gap-4 px-4 py-2 border-b border-page-border bg-page-surface">
         <strong class="font-semibold tracking-tight flex-1">rice-registry</strong>
+        <Show when={!isTauri}>
+          <span class="text-xs text-page-faint">
+            (browser preview — apply/preview-plan disabled)
+          </span>
+        </Show>
         <div class="flex gap-0.5 bg-page-muted rounded p-0.5">
           <button
             type="button"
             class="px-2.5 py-0.5 text-xs rounded cursor-pointer transition-colors"
             classList={{
               "bg-page-primary text-page-primary-fg": mode() === "light",
-              "text-page-fg hover:bg-page-bg/40": mode() !== "light",
+              "text-page-fg hover:bg-page-surface": mode() !== "light",
             }}
             onClick={() => setMode("light")}
           >
@@ -86,7 +117,7 @@ export function App() {
             class="px-2.5 py-0.5 text-xs rounded cursor-pointer transition-colors"
             classList={{
               "bg-page-primary text-page-primary-fg": mode() === "dark",
-              "text-page-fg hover:bg-page-bg/40": mode() !== "dark",
+              "text-page-fg hover:bg-page-surface": mode() !== "dark",
             }}
             onClick={() => setMode("dark")}
           >
@@ -97,7 +128,7 @@ export function App() {
 
       {/* ───── Main: sidebar + preview ───── */}
       <main class="grid grid-cols-[320px_1fr] overflow-hidden min-h-0">
-        <aside class="flex flex-col bg-page-bg/30 border-r border-page-border overflow-hidden min-h-0">
+        <aside class="flex flex-col bg-page-surface border-r border-page-border overflow-hidden min-h-0">
           <FilterBar
             targets={machineTargets()}
             type={typeFilter()}
@@ -135,7 +166,7 @@ export function App() {
       </main>
 
       {/* ───── Footer ───── */}
-      <footer class="bg-page-bg/30 border-t border-page-border px-4 py-3 max-h-[40vh] overflow-y-auto flex flex-col gap-2">
+      <footer class="bg-page-surface border-t border-page-border px-4 py-3 max-h-[40vh] overflow-y-auto flex flex-col gap-2">
         <Show
           when={selectedItem()}
           fallback={<p class="italic text-page-faint">select an item from the catalog</p>}
@@ -185,17 +216,24 @@ export function App() {
                   <button
                     type="button"
                     class="bg-page-muted text-page-fg border-0 px-3.5 py-1.5 rounded-md text-sm font-medium cursor-pointer transition-[filter] disabled:opacity-55 disabled:cursor-not-allowed hover:not-disabled:brightness-110"
-                    disabled={running() !== null}
+                    disabled={running() !== null || !isTauri}
                     onClick={() => runCli("explain", item().name)}
+                    title={!isTauri ? "Open inside the Tauri app to use" : undefined}
                   >
                     {running() === "explain" ? "running…" : "Preview plan"}
                   </button>
                   <button
                     type="button"
                     class="bg-page-primary text-page-primary-fg border-0 px-3.5 py-1.5 rounded-md text-sm font-medium cursor-pointer transition-[filter] disabled:opacity-55 disabled:cursor-not-allowed hover:not-disabled:brightness-110"
-                    disabled={!installable() || running() !== null}
+                    disabled={!installable() || running() !== null || !isTauri}
                     onClick={() => runCli("apply", item().name)}
-                    title={!installable() ? "Add machine targets to enable apply" : undefined}
+                    title={
+                      !isTauri
+                        ? "Open inside the Tauri app to use"
+                        : !installable()
+                          ? "Add machine targets to enable apply"
+                          : undefined
+                    }
                   >
                     {running() === "apply"
                       ? "running…"

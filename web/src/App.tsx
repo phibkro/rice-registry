@@ -51,7 +51,7 @@ export function App() {
 
   return (
     <div class="grid grid-rows-[auto_1fr] h-screen text-page-fg bg-page-bg">
-      <header class="flex items-center gap-4 px-5 py-3 border-b border-page-border bg-page-bg/60">
+      <header class="flex items-center gap-4 px-5 py-3 border-b border-page-border bg-page-surface">
         <div class="flex gap-2 items-baseline flex-1">
           <strong class="font-semibold tracking-tight">rice-registry</strong>
           <span class="text-page-faint text-sm">declarative ricing, MySpace-feel</span>
@@ -103,7 +103,7 @@ export function App() {
           />
         </section>
 
-        <section class="flex flex-col overflow-y-auto bg-page-bg/30 border-l border-page-border max-[700px]:border-l-0 max-[700px]:border-t">
+        <section class="flex flex-col overflow-y-auto bg-page-surface border-l border-page-border max-[700px]:border-l-0 max-[700px]:border-t">
           <div class="sticky top-0 z-10">
             <FilterBar
               targets={machineTargets()}
@@ -131,7 +131,7 @@ export function App() {
           </Show>
         </section>
 
-        <aside class="overflow-y-auto bg-page-bg/30 border-l border-page-border p-4 max-[700px]:border-l-0 max-[700px]:border-t">
+        <aside class="overflow-y-auto bg-page-surface border-l border-page-border p-4 max-[700px]:border-l-0 max-[700px]:border-t">
           <ItemDetail
             item={selectedItem() ?? null}
             machineTargets={machineTargets()}
