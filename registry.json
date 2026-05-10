@@ -100,6 +100,27 @@
         ]
       },
       "url": "/r/niri-default-bar.json"
+    },
+    {
+      "name": "sunset-amber",
+      "type": "registry:theme",
+      "title": "Sunset Amber",
+      "description": "Warm desert palette — terracotta, amber, sand. Pairs with the mountain landscapes you'd see at the same hour.",
+      "author": "rice-registry/example",
+      "categories": [
+        "palette",
+        "warm",
+        "vivid"
+      ],
+      "targets": [
+        "any"
+      ],
+      "slots": {
+        "provides": [
+          "theme.palette"
+        ]
+      },
+      "url": "/r/sunset-amber.json"
     }
   ]
 }

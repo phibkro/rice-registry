@@ -1,0 +1,50 @@
+{
+  "name": "sunset-amber",
+  "type": "registry:theme",
+  "title": "Sunset Amber",
+  "description": "Warm desert palette — terracotta, amber, sand. Pairs with the mountain landscapes you'd see at the same hour.",
+  "author": "rice-registry/example",
+  "license": "MIT",
+  "version": "0.1.0",
+  "categories": [
+    "palette",
+    "warm",
+    "vivid"
+  ],
+  "targets": [
+    "any"
+  ],
+  "compatibility": {
+    "stylix": ">=0.2"
+  },
+  "slots": {
+    "provides": [
+      "theme.palette"
+    ]
+  },
+  "cssVars": {
+    "theme": {
+      "font-display": "Inter",
+      "font-mono": "JetBrains Mono",
+      "radius": "10px"
+    },
+    "light": {
+      "background": "#fdf6ef",
+      "foreground": "#3d2817",
+      "primary": "#c4623c",
+      "primary-foreground": "#ffffff",
+      "accent": "#dba663",
+      "muted": "#f0e5d4",
+      "border": "#d8c2a4"
+    },
+    "dark": {
+      "background": "#1a1410",
+      "foreground": "#ede0cf",
+      "primary": "#e07a4d",
+      "primary-foreground": "#0c0805",
+      "accent": "#a06a3e",
+      "muted": "#2c241c",
+      "border": "#3e3327"
+    }
+  }
+}
