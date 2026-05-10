@@ -50,6 +50,7 @@ app/                         Tauri 2 desktop app (Solid + Vite)
 docs/
   DESIGN.md                    pinned decisions: shape, slot semantics, apply path
   OUTSTANDING.md               punch list of what's deferred
+  GOTCHAS.md                   known landmines + fixes
   RICE_COOKER_COMPARISON.md    notes on amarsbar/rice-cooker manifest shape
 ```
 

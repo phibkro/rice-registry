@@ -46,14 +46,22 @@
           buildInputs = tauriBuildInputs;
 
           shellHook = ''
+            # WebKitGTK + Wayland + NVIDIA (esp. Hyprland) trips a DMA-BUF
+            # protocol error at WebView spawn time:
+            #   Gdk-Message: Error 71 (Protocol error) dispatching to Wayland display.
+            # Disabling the DMA-BUF renderer falls back to a working code path.
+            # https://github.com/tauri-apps/tauri/issues/9304
+            export WEBKIT_DISABLE_DMABUF_RENDERER=1
+
             echo "rice-registry dev shell"
             echo
-            echo "  CLI:    cd cli && bun install"
-            echo "          bun src/index.ts build"
-            echo "          bun src/index.ts query --target hyprland"
+            echo "  Workspace:  bun install        # at root"
+            echo "  CLI:        bun cli/src/index.ts build"
+            echo "              bun cli/src/index.ts query --target hyprland"
+            echo "  Web:        cd web && bun run dev"
+            echo "  App:        cd app && bun run tauri dev   # first build is slow"
             echo
-            echo "  App:    cd app && bun install"
-            echo "          bun run tauri dev   # first build is slow (Cargo fetches deps)"
+            echo "  Lint+fmt:   bun run check"
           '';
         };
       });
