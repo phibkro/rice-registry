@@ -29,6 +29,14 @@ cli/                         nix-rice CLI (TypeScript + Bun)
   src/query.ts                 filter index by machine targets / type
   src/add.ts                   [stub] resolve + print dep graph
 
+app/                         Tauri 2 desktop app (vanilla TS + Vite)
+  src/                         frontend (HTML + TS + CSS)
+  src-tauri/                   Rust backend
+    src/lib.rs                   read_registry / read_item / apply_item
+
+docs/
+  RICE_COOKER_COMPARISON.md    notes on amarsbar/rice-cooker manifest shape
+
 registry.json                generated index (committed for static hosting)
 r/                           generated per-item JSON (committed)
 flake.nix                    dev shell
@@ -57,6 +65,23 @@ bun cli/src/index.ts query --type registry:theme
 
 Hosting the output is a static file drop — `registry.json` + `r/*.json` to
 GitHub Pages, S3, or any CDN.
+
+## Desktop app
+
+A minimal Tauri 2 shell over the registry lives at `app/`. It reads
+`registry.json` + `r/<name>.json` from disk via `#[tauri::command]`s, lets
+you filter by machine substrate tags, and shells out to the bun CLI for
+`apply` (currently the stub).
+
+```sh
+nix develop                              # rust + webkit + bun + node
+cd app && bun install
+bun run tauri dev                        # first build is slow — Cargo fetches Tauri deps
+```
+
+The frontend is plain HTML + vanilla TS + CSS; no React/Svelte/Vue. The
+Rust backend exposes three commands: `read_registry`, `read_item`, and
+`apply_item` (the last shells out to `bun cli/src/index.ts add r/<name>.json`).
 
 ## Design
 

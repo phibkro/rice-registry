@@ -1,0 +1,192 @@
+:root {
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1c2227;
+  background: #f4f6f8;
+  --bg: #f4f6f8;
+  --fg: #1c2227;
+  --muted: #dde3e8;
+  --border: #c4ccd2;
+  --primary: #5b7a92;
+  --primary-fg: #ffffff;
+  --accent: #9ab3c5;
+  --danger: #b4564b;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+}
+
+header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: white;
+}
+
+.brand {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.filter {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex: 1;
+}
+
+.filter-label {
+  font-size: 0.85em;
+  color: #6b7480;
+}
+
+.tags { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+
+.pill {
+  background: var(--primary);
+  color: var(--primary-fg);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.85em;
+  cursor: pointer;
+  user-select: none;
+}
+.pill .x { margin-left: 4px; opacity: 0.7; }
+
+#target-input, .type-filter {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font: inherit;
+  background: white;
+}
+#target-input { flex: 1; min-width: 200px; }
+
+main {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) 2fr;
+  overflow: hidden;
+}
+
+.items, .detail { overflow-y: auto; padding: 1rem; }
+.items { border-right: 1px solid var(--border); background: white; }
+
+.summary {
+  font-size: 0.85em;
+  color: #6b7480;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.item {
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  margin-bottom: 0.25rem;
+}
+.item:hover { background: var(--muted); }
+.item.no-match { opacity: 0.45; }
+.item .row { display: flex; justify-content: space-between; gap: 0.5rem; }
+.item .type {
+  font-size: 0.8em;
+  color: #6b7480;
+  font-family: ui-monospace, monospace;
+}
+.item .title { font-weight: 500; margin-top: 0.25rem; }
+.item .desc {
+  font-size: 0.9em;
+  color: #4a525c;
+  margin-top: 0.25rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.item .targets {
+  font-size: 0.8em;
+  color: #6b7480;
+  font-family: ui-monospace, monospace;
+  margin-top: 0.5rem;
+}
+
+.detail h2 { margin: 0 0 0.5rem; }
+.detail .meta { display: flex; gap: 0.75rem; color: #6b7480; font-size: 0.9em; }
+.detail .desc { color: #4a525c; }
+.detail .kv {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 1rem 0;
+  font-size: 0.95em;
+}
+.detail .kv dt { color: #6b7480; }
+.detail .kv dd { margin: 0; }
+.detail code {
+  font-family: ui-monospace, monospace;
+  background: var(--muted);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+.detail details {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.5rem;
+  margin: 0.75rem 0;
+}
+.detail summary { cursor: pointer; font-weight: 500; }
+.detail pre {
+  background: var(--muted);
+  padding: 0.5rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.85em;
+  margin-top: 0.5rem;
+}
+
+button {
+  background: var(--primary);
+  color: var(--primary-fg);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+button:disabled {
+  background: var(--muted);
+  color: #6b7480;
+  cursor: not-allowed;
+}
+button:not(:disabled):hover { filter: brightness(1.05); }
+
+.hint, .error { color: #6b7480; font-style: italic; }
+.error { color: var(--danger); }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #dde4ea;
+    background: #181c20;
+    --bg: #181c20;
+    --fg: #dde4ea;
+    --muted: #2a3138;
+    --border: #3a434c;
+    --primary: #7ba0bd;
+    --primary-fg: #0c1014;
+    --accent: #4d6678;
+  }
+  header, .items { background: #1f2429; }
+  .item:hover { background: var(--muted); }
+}

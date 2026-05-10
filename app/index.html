@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>rice-registry</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+    <script type="module" src="/src/main.ts" defer></script>
+  </head>
+  <body>
+    <header>
+      <div class="brand">rice-registry</div>
+      <div class="filter">
+        <span class="filter-label">machine targets</span>
+        <div id="tags" class="tags"></div>
+        <input
+          id="target-input"
+          placeholder="add tag (e.g. hyprland) ↵"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <select id="type-filter" class="type-filter">
+          <option value="">all types</option>
+          <option value="registry:base">registry:base</option>
+          <option value="registry:component">registry:component</option>
+          <option value="registry:theme">registry:theme</option>
+          <option value="registry:font">registry:font</option>
+          <option value="registry:layout">registry:layout</option>
+          <option value="registry:style">registry:style</option>
+        </select>
+      </div>
+    </header>
+    <main>
+      <section id="items" class="items"></section>
+      <section id="detail" class="detail">
+        <p class="hint">select an item</p>
+      </section>
+    </main>
+  </body>
+</html>
