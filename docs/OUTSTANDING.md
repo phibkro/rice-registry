@@ -13,10 +13,15 @@ for the planned sequence. Steps to land:
       a user-imported file). Lean toward `nix-rice init` writing
       `~/.config/home-manager/rice-registry.nix` once, the user adds one
       import line, we own that file thereafter.
-- [ ] State file at `~/.config/rice-registry/installed.json` — what's
-      currently installed, transitively. Drives conflict detection on
-      future installs. Today the resolver takes installed-names via
-      `--installed` flag; production needs a real state file.
+- [ ] Write-side of apply — for each file in the resolved closure,
+      materialize content to disk (`@home/.config/...` placeholders
+      resolved against `$HOME`; `module:home` files into
+      `~/.config/rice-registry/items/<name>/module.nix`). Regenerate
+      `rice-registry.nix` to import every installed module:home file.
+      Append to installed.json. Print `nh home switch` next-step (don't
+      run it automatically — let the user review the diff first).
+- [ ] `nix-rice remove <name>` — inverse of add. Pop from installed.json,
+      regenerate managed module, optionally rm `items/<name>/`.
 - [ ] Compatibility version checks — `compatibility.{hyprland,quickshell,…}`
       version-string parsing + comparison against the user's machine.
       Currently the resolver doesn't enforce these.
