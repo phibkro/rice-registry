@@ -29,11 +29,13 @@ export async function add(target: string): Promise<void> {
   console.log(`Resolving: ${root.name} (${root.type})`);
 
   let installed: string[] = [];
+  let machine = undefined;
   if (await exists(INSTALLED_PATH)) {
     const state = await readInstalled();
     installed = state.installed.map((e) => e.name);
+    machine = state.machine;
   }
-  const { resolved, conflicts } = await plan(root, installed);
+  const { resolved, conflicts } = await plan(root, installed, machine);
 
   if (resolved.items.length > 1) {
     console.log(`  transitive closure (${resolved.items.length}):`);
@@ -56,6 +58,9 @@ export async function add(target: string): Promise<void> {
     }
     for (const u of conflicts.unsatisfied) {
       console.error(`    unresolved: ${u}`);
+    }
+    for (const m of conflicts.compatMisses) {
+      console.error(`    ${m.item}: requires ${m.key} ${m.required}; machine has ${m.actual}`);
     }
     process.exit(1);
   }

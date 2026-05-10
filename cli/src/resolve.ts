@@ -2,6 +2,8 @@ import { readFile } from "node:fs/promises";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { RegistryItem } from "./schema.ts";
+import type { MachineProfile } from "./state.ts";
+import { checkCompat, type CompatMiss } from "./compat.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..", "..");
@@ -31,6 +33,8 @@ export type ConflictReport = {
   unmetConsumes: UnmetConsume[];
   /** registryDependencies that couldn't be resolved. */
   unsatisfied: string[];
+  /** Items whose compatibility constraint isn't satisfied by the machine. */
+  compatMisses: CompatMiss[];
 };
 
 /** Read a registry item from a local r/<name>.json file. URL fetching is
@@ -137,16 +141,22 @@ export function detectConflicts(
     slotConflicts,
     unmetConsumes,
     unsatisfied: [],
+    compatMisses: [],
   };
 }
 
 /** Top-level: resolve a root item's transitive deps + check conflicts
  * against an already-installed set. Items already in `installedNames`
  * are excluded from the pending set — re-running `add` on something
- * already installed should not false-trigger a self-conflict. */
+ * already installed should not false-trigger a self-conflict.
+ *
+ * If `machine` is provided, also runs compatibility version checks on
+ * the pending items; missing constraints become CompatMiss entries on
+ * the conflict report. */
 export async function plan(
   root: RegistryItem,
-  installedNames: string[]
+  installedNames: string[],
+  machine?: MachineProfile
 ): Promise<{ resolved: ResolvedSet; conflicts: ConflictReport }> {
   const resolved = await resolveTransitive(root);
 
@@ -163,7 +173,10 @@ export async function plan(
 
   const conflicts = detectConflicts(installed, pending);
   conflicts.unsatisfied = [...resolved.unsatisfied, ...installUnsatisfied];
-  if (conflicts.unsatisfied.length > 0) conflicts.ok = false;
+  conflicts.compatMisses = checkCompat(pending, machine);
+  if (conflicts.unsatisfied.length > 0 || conflicts.compatMisses.length > 0) {
+    conflicts.ok = false;
+  }
 
   return { resolved, conflicts };
 }

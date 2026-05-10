@@ -3,7 +3,7 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { RegistryItem } from "./schema.ts";
 import { plan } from "./resolve.ts";
-import { readInstalled, exists, INSTALLED_PATH } from "./state.ts";
+import { readInstalled, exists, INSTALLED_PATH, type MachineProfile } from "./state.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..", "..");
@@ -37,14 +37,16 @@ export async function explain(opts: ExplainOpts): Promise<number> {
 
   // If --installed wasn't passed, fall back to the state file.
   let installed = opts.installed;
+  let machine: MachineProfile | undefined;
   let installedSource = "flags";
   if (installed.length === 0 && (await exists(INSTALLED_PATH))) {
     const state = await readInstalled();
     installed = state.installed.map((e) => e.name);
+    machine = state.machine;
     installedSource = "installed.json";
   }
 
-  const { resolved, conflicts } = await plan(root, installed);
+  const { resolved, conflicts } = await plan(root, installed, machine);
 
   console.log(`Plan for ${root.name} (${root.type}):`);
   console.log("");
@@ -83,6 +85,12 @@ export async function explain(opts: ExplainOpts): Promise<number> {
     console.log("  ✗ unresolved dependencies:");
     for (const u of conflicts.unsatisfied) {
       console.log(`      ${u}`);
+    }
+  }
+  if (conflicts.compatMisses.length > 0) {
+    console.log("  ✗ compatibility misses:");
+    for (const m of conflicts.compatMisses) {
+      console.log(`      ${m.item}: requires ${m.key} ${m.required}; machine has ${m.actual}`);
     }
   }
   return 1;

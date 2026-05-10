@@ -12,7 +12,6 @@ import {
   readInstalled,
   writeInstalled,
   type InstalledEntry,
-  type InstalledState,
 } from "./state.ts";
 
 // All files materialize as siblings of module.nix under
@@ -25,9 +24,8 @@ function siblingDest(filePath: string, itemDir: string): string {
   return resolve(itemDir, basename(filePath));
 }
 
-/** Returns the relative module.nix path under STATE_DIR if the item shipped
- * one, or null if it has no module:home file (e.g. a registry:theme that's
- * just cssVars). */
+/** Returns the relative module-path under STATE_DIR if the item shipped
+ * a home-manager module (or we synthesized one for a theme), or null. */
 async function writeItemFiles(item: RegistryItem): Promise<string | null> {
   const itemDir = resolve(ITEMS_DIR, item.name);
   let homeModuleRelative: string | null = null;
@@ -44,7 +42,7 @@ async function writeItemFiles(item: RegistryItem): Promise<string | null> {
   }
 
   // For items with cssVars but no module:home (registry:theme), generate a
-  // thin module that exposes the palette under `rice.theme.<name>.cssVars`.
+  // thin module that exposes the palette under `rice.themes.<name>.cssVars`.
   if (!homeModuleRelative && item.cssVars) {
     await mkdir(itemDir, { recursive: true });
     const themeNix = generateThemeModule(item);
@@ -57,9 +55,11 @@ async function writeItemFiles(item: RegistryItem): Promise<string | null> {
 }
 
 function nixString(s: string): string {
-  // Quick-and-dirty Nix string literal escape. Good enough for hex colors,
-  // font names, and similar palette values; revisit if values get exotic.
-  return `"${s.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\$/g, "\\$")}"`;
+  return `"${s
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, "\\n")
+    .replace(/\$/g, "\\$")}"`;
 }
 
 function nixAttrs(obj: Record<string, string>, indent: string): string {
@@ -85,17 +85,16 @@ function generateThemeModule(item: RegistryItem): string {
   return lines.join("\n") + "\n";
 }
 
-function generateManagedModule(
-  installed: InstalledEntry[],
-  perItem: Map<string, string | null>
-): string {
+function quoteAttr(name: string): string {
+  return /^[a-zA-Z_][a-zA-Z0-9_']*$/.test(name) ? name : `"${name}"`;
+}
+
+function generateManagedModule(installed: InstalledEntry[]): string {
   const imports: string[] = [];
   const componentEnables: string[] = [];
 
   for (const it of installed) {
-    const rel = perItem.get(it.name);
-    if (rel) imports.push(`    ${rel}`);
-
+    if (it.homeModule) imports.push(`    ${it.homeModule}`);
     if (it.type === "registry:component") {
       componentEnables.push(`  rice.components.${quoteAttr(it.name)}.enable = true;`);
     }
@@ -118,9 +117,11 @@ function generateManagedModule(
   ].join("\n");
 }
 
-function quoteAttr(name: string): string {
-  // Nix attribute names with `-` need quoting.
-  return /^[a-zA-Z_][a-zA-Z0-9_'-]*$/.test(name) && !name.includes("-") ? name : `"${name}"`;
+/** Read the current installed state and rewrite the managed module from it.
+ * Used by both `add` (after appending new items) and `remove` (after popping). */
+export async function regenerateManagedModule(): Promise<void> {
+  const state = await readInstalled();
+  await writeFile(MANAGED_MODULE_PATH, generateManagedModule(state.installed), "utf-8");
 }
 
 export type ApplyResult = {
@@ -135,58 +136,33 @@ export async function applyResolved(resolved: RegistryItem[]): Promise<ApplyResu
   await mkdir(STATE_DIR, { recursive: true });
   await mkdir(ITEMS_DIR, { recursive: true });
 
-  const state: InstalledState = await readInstalled();
+  const state = await readInstalled();
   const installedNames = new Set(state.installed.map((e) => e.name));
 
   const newItems: string[] = [];
   const alreadyInstalled: string[] = [];
-  const perItem = new Map<string, string | null>();
-
-  // Pre-fill perItem from existing state — we still need to import them
-  // when regenerating the managed module. Trust the names; the actual
-  // module.nix file is on disk from a prior install.
-  for (const e of state.installed) {
-    perItem.set(e.name, await guessExistingModuleRel(e));
-  }
-
   let filesWritten = 0;
+
   for (const it of resolved) {
     if (installedNames.has(it.name)) {
       alreadyInstalled.push(it.name);
       continue;
     }
-    const rel = await writeItemFiles(it);
-    perItem.set(it.name, rel);
+    const homeModule = await writeItemFiles(it);
     if (it.files) filesWritten += it.files.length;
-    if (rel?.endsWith("theme.nix")) filesWritten += 1; // synthesized
+    if (homeModule?.endsWith("theme.nix")) filesWritten += 1; // synthesized
 
     state.installed.push({
       name: it.name,
       type: it.type,
       addedAt: new Date().toISOString(),
+      ...(homeModule ? { homeModule } : {}),
     });
     newItems.push(it.name);
   }
 
   await writeInstalled(state);
-
-  const moduleSource = generateManagedModule(state.installed, perItem);
-  await writeFile(MANAGED_MODULE_PATH, moduleSource, "utf-8");
+  await writeFile(MANAGED_MODULE_PATH, generateManagedModule(state.installed), "utf-8");
 
   return { newItems, alreadyInstalled, filesWritten };
-}
-
-/** When regenerating the managed module after install/remove, we need to
- * know each item's module path. For items installed in the past, we don't
- * have the original RegistryItem in hand — guess from convention. */
-async function guessExistingModuleRel(entry: InstalledEntry): Promise<string | null> {
-  // Heuristic: components have module.nix; themes have theme.nix; bases
-  // typically have neither. The `state.ts` export ITEMS_DIR is the parent.
-  if (entry.type === "registry:component" || entry.type === "registry:layout") {
-    return `./items/${entry.name}/module.nix`;
-  }
-  if (entry.type === "registry:theme") {
-    return `./items/${entry.name}/theme.nix`;
-  }
-  return null;
 }

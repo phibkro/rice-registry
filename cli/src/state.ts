@@ -24,11 +24,27 @@ export type InstalledEntry = {
   name: string;
   type: string;
   addedAt: string;
+  /** Relative path (from STATE_DIR) to this item's home-manager module
+   * file, if any. Used by the managed-module regenerator. */
+  homeModule?: string;
+};
+
+export type MachineProfile = {
+  /** Versions the user has installed of substrate tools. Drives
+   * compatibility checks. Optional — when absent, compat checks are
+   * skipped with a note. */
+  hyprland?: string;
+  quickshell?: string;
+  waybar?: string;
+  stylix?: string;
+  homeManager?: string;
+  nixpkgs?: string;
 };
 
 export type InstalledState = {
   version: 1;
   installed: InstalledEntry[];
+  machine?: MachineProfile;
 };
 
 export async function exists(path: string): Promise<boolean> {

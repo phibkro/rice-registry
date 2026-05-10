@@ -10,14 +10,10 @@ git log is the history).
 slot conflicts against `installed.json`, and **materializes files +
 regenerates the managed module + persists state**. What's left:
 
-- [ ] **`nix-rice remove <name>`** — inverse of add. Pop from
-      installed.json, regenerate the managed module, optionally rm
-      `items/<name>/`. Refuse if another installed item depends on it
-      (via `registryDependencies`) unless `--cascade`.
-- [ ] **Compatibility version checks** — semver parsing for
-      `compatibility.{hyprland, quickshell, homeManager, …}`. Compare
-      against the user's machine; fail conflict-check on mismatch.
-      Currently the resolver doesn't enforce these.
+- [ ] **`nix-rice machine`** command — set/get the machine profile in
+      installed.json. Today users edit installed.json directly to
+      declare their `hyprland`, `quickshell`, etc. versions for compat
+      checks. CLI sugar is overdue.
 - [ ] **`registryDependencies` over the wire** — `add <url>` only loads
       one item; transitive deps are resolved against the local `r/`
       directory. For external registries, the resolver needs to fetch

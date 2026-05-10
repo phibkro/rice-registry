@@ -6,6 +6,7 @@ import { query } from "./query.ts";
 import { explain } from "./explain.ts";
 import { init } from "./init.ts";
 import { list } from "./list.ts";
+import { remove } from "./remove.ts";
 
 const [, , cmd, ...rest] = process.argv;
 
@@ -41,6 +42,12 @@ Usage:
 
   nix-rice list
       List currently-installed items from ~/.config/rice-registry/installed.json.
+
+  nix-rice remove <name> [--cascade]
+      Remove an installed item: pop from installed.json, delete its
+      items/<name>/ dir, regenerate the managed home-manager module.
+      Refuses if other installed items depend on it; pass --cascade
+      to remove the dependents too. Prints 'nh home switch' next-step.
 `;
 
 switch (cmd) {
@@ -103,6 +110,16 @@ switch (cmd) {
   }
   case "list": {
     const code = await list();
+    process.exit(code);
+  }
+  case "remove": {
+    const name = rest[0];
+    if (!name) {
+      console.error("remove: missing name argument");
+      process.exit(2);
+    }
+    const cascade = rest.includes("--cascade");
+    const code = await remove({ name, cascade });
     process.exit(code);
   }
   case undefined:
