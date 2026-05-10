@@ -3,6 +3,7 @@ import { build } from "./build.ts";
 import { validatePath } from "./validate.ts";
 import { add } from "./add.ts";
 import { query } from "./query.ts";
+import { explain } from "./explain.ts";
 
 const [, , cmd, ...rest] = process.argv;
 
@@ -25,6 +26,11 @@ Usage:
       List installable items from a registry index, filtered by your
       machine's substrate tags. --target may be repeated. Defaults:
       --registry ./registry.json.
+
+  nix-rice explain <name-or-path-or-url> [--installed <name>]...
+      Resolve transitive dependencies and report slot conflicts against
+      an already-installed set. Read-only — does not mutate anything.
+      --installed may be repeated.
 `;
 
 switch (cmd) {
@@ -66,6 +72,19 @@ switch (cmd) {
     }
     await query({ registry, machineTags, type });
     break;
+  }
+  case "explain": {
+    const target = rest[0];
+    if (!target) {
+      console.error("explain: missing target argument");
+      process.exit(2);
+    }
+    const installed: string[] = [];
+    for (let i = 1; i < rest.length; i++) {
+      if (rest[i] === "--installed") installed.push(rest[++i]!);
+    }
+    const code = await explain({ target, installed });
+    process.exit(code);
   }
   case undefined:
   case "--help":

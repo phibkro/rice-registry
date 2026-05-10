@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { loadValidators, type RegistryItem } from "./schema.ts";
+import { plan } from "./resolve.ts";
 
 async function fetchItem(target: string): Promise<RegistryItem> {
   if (target.startsWith("http://") || target.startsWith("https://")) {
@@ -7,8 +8,6 @@ async function fetchItem(target: string): Promise<RegistryItem> {
     if (!res.ok) throw new Error(`fetch ${target}: HTTP ${res.status}`);
     return (await res.json()) as RegistryItem;
   }
-  // Treat as a local path for now; real implementation would resolve against
-  // a configured default-registry URL and fall back to multiple sources.
   const raw = await readFile(target, "utf-8");
   return JSON.parse(raw) as RegistryItem;
 }
@@ -26,32 +25,39 @@ export async function add(target: string): Promise<void> {
   }
 
   console.log(`Resolved: ${root.name} (${root.type})`);
-  if (root.registryDependencies?.length) {
-    console.log(`  registryDependencies: ${root.registryDependencies.join(", ")}`);
+
+  // Resolve transitive deps + check conflicts (against an empty
+  // already-installed set for the prototype — no state file yet).
+  const { resolved, conflicts } = await plan(root, []);
+
+  if (resolved.items.length > 1) {
+    console.log(`  transitive closure (${resolved.items.length}):`);
+    for (const it of resolved.items) {
+      const provides = it.slots?.provides?.length
+        ? ` provides=[${it.slots.provides.join(", ")}]`
+        : "";
+      console.log(`    ${it.name.padEnd(24)} ${it.type.padEnd(20)}${provides}`);
+    }
   }
-  if (root.nixpkgsDependencies?.length) {
-    console.log(`  nixpkgsDependencies:  ${root.nixpkgsDependencies.join(", ")}`);
-  }
-  if (root.slots) {
-    if (root.slots.provides?.length)  console.log(`  provides:  ${root.slots.provides.join(", ")}`);
-    if (root.slots.consumes?.length)  console.log(`  consumes:  ${root.slots.consumes.join(", ")}`);
-    if (root.slots.conflicts?.length) console.log(`  conflicts: ${root.slots.conflicts.join(", ")}`);
-  }
-  if (root.cssVars) {
-    const tokens = new Set([
-      ...Object.keys(root.cssVars.theme ?? {}),
-      ...Object.keys(root.cssVars.light ?? {}),
-      ...Object.keys(root.cssVars.dark ?? {}),
-    ]);
-    console.log(`  cssVars: ${tokens.size} token(s) [${[...tokens].slice(0, 6).join(", ")}${tokens.size > 6 ? ", ..." : ""}]`);
-  }
-  if (root.files?.length) {
-    console.log(`  files: ${root.files.length}`);
+
+  if (!conflicts.ok) {
+    console.error("\n  ✗ apply blocked by conflicts:");
+    for (const c of conflicts.slotConflicts) {
+      console.error(`    slot ${c.slot}: ${c.items.join(", ")}`);
+    }
+    for (const u of conflicts.unmetConsumes) {
+      console.error(`    ${u.item} consumes ${u.slot} which is not provided`);
+    }
+    for (const u of conflicts.unsatisfied) {
+      console.error(`    unresolved: ${u}`);
+    }
+    process.exit(1);
   }
 
   console.log(
-    "\n[stub] add: schema-validated, dependency graph printed.\n" +
-      "       Real apply path (resolve transitively → write to user flake imports →\n" +
-      "       'nh home switch' → screenshot generation thumbnail) not implemented yet."
+    "\n[stub] add: resolved + conflict-checked.\n" +
+      "       Real apply path (mutate user flake → nh home build → switch →\n" +
+      "       screenshot generation thumbnail) not implemented yet — see\n" +
+      "       docs/OUTSTANDING.md § Apply path."
   );
 }

@@ -15,11 +15,11 @@ for the planned sequence. Steps to land:
       import line, we own that file thereafter.
 - [ ] State file at `~/.config/rice-registry/installed.json` — what's
       currently installed, transitively. Drives conflict detection on
-      future installs.
-- [ ] Transitive resolver in `cli/src/resolve.ts` — walks
-      `registryDependencies`, builds DAG, detects cycles.
-- [ ] Conflict check — overlapping `provides`, unmet `consumes`, failed
-      `compatibility` constraints. Surface visibly; never silent.
+      future installs. Today the resolver takes installed-names via
+      `--installed` flag; production needs a real state file.
+- [ ] Compatibility version checks — `compatibility.{hyprland,quickshell,…}`
+      version-string parsing + comparison against the user's machine.
+      Currently the resolver doesn't enforce these.
 - [ ] Flake mutation — add input(s) + imports. Idempotent. Failed install
       reverts the mutation.
 - [ ] Build + switch — `nh home build` for preview, `nh home switch` for
@@ -32,16 +32,6 @@ for the planned sequence. Steps to land:
       which requires bun on PATH. Either bundle bun, or port the apply
       logic to Rust. Lean toward Rust port once the path stabilizes;
       keep bun shell-out for the prototype.
-
-## Slot conflict resolver
-
-Pinned semantics in `docs/DESIGN.md` § "Slot semantics". Implementation:
-
-- [ ] `cli/src/resolve.ts` (or similar) — given a list of items + the
-      user's installed set, compute the conflict graph and surface any
-      overlap.
-- [ ] CLI flag `--explain` that prints the resolution for a candidate
-      install without actually applying.
 
 ## Schema + tooling
 
