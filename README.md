@@ -29,20 +29,30 @@ cli/                         nix-rice CLI (TypeScript + Bun)
   src/query.ts                 filter index by machine targets / type
   src/add.ts                   [stub] resolve + print dep graph
 
-app/                         Tauri 2 desktop app (vanilla TS + Vite)
-  src/                         frontend (HTML + TS + CSS)
+packages/shared/             shared types + Solid components
+  src/types.ts                 RegistryIndex, RegistryItem, CssVars, Mode
+  src/filter.ts                isInstallable
+  src/components/              FakeDesktop, FilterBar, ItemList, ItemDetail
+  src/styles/                  shell.css, fake-desktop.css
+
+web/                         Static showcase (Solid + Vite)
+  src/App.tsx                  page composition + fetchers
+  src/main.tsx                 entry
+  scripts/copy-registry.ts     pre-build: copies registry.json + r/ to public/
+
+app/                         Tauri 2 desktop app (Solid + Vite)
+  src/App.tsx                  page composition + Tauri invokes
+  src/main.tsx                 entry
   src-tauri/                   Rust backend
     src/lib.rs                   read_registry / read_item / apply_item
-
-web/                         Static showcase (vanilla TS + Vite)
-  src/main.ts                  filter + selection logic (mirrors app/)
-  src/fake-desktop.ts          mocked Hyprland session that re-skins via cssVars
-  scripts/copy-registry.ts     pre-build: copies registry.json + r/ to public/
 
 docs/
   DESIGN.md                    pinned decisions: shape, slot semantics, apply path
   OUTSTANDING.md               punch list of what's deferred
   RICE_COOKER_COMPARISON.md    notes on amarsbar/rice-cooker manifest shape
+
+Workspace is bun-managed (`workspaces` in root package.json). One install
+at the root populates all sub-packages: `bun install` from the repo root.
 
 registry.json                generated index (committed for static hosting)
 r/                           generated per-item JSON (committed)
@@ -86,9 +96,10 @@ cd app && bun install
 bun run tauri dev                        # first build is slow — Cargo fetches Tauri deps
 ```
 
-The frontend is plain HTML + vanilla TS + CSS; no React/Svelte/Vue. The
-Rust backend exposes three commands: `read_registry`, `read_item`, and
-`apply_item` (the last shells out to `bun cli/src/index.ts add r/<name>.json`).
+Frontend is Solid + Vite, sharing components with the web showcase via
+`packages/shared`. The Rust backend exposes three commands: `read_registry`,
+`read_item`, and `apply_item` (the last shells out to
+`bun cli/src/index.ts add r/<name>.json`).
 
 ## Web showcase
 
@@ -103,17 +114,17 @@ bun run dev      # vite dev server on localhost:1421
 bun run build    # → web/dist/ (deployable)
 ```
 
-The showcase mirrors the local app's filter UI and adds a **fake-desktop
-preview pane** — a `<div>`-mocked Hyprland session that re-skins itself
-when you select a `registry:theme` by injecting that item's `cssVars`
-onto the preview's root. Light/dark mode toggle. Components reference
-semantic tokens (`var(--background)`, `var(--primary)`, …) so any theme
-works without code changes — the killer demo of the cssVars decoupling.
+Same Solid components as the local app (lifted into `packages/shared`):
+filter bar, item list, item detail, **fake-desktop preview pane**. The
+preview re-skins itself when you select a `registry:theme` by injecting
+that item's `cssVars` onto the preview's root. Light/dark mode toggle.
+Components reference semantic tokens (`var(--background)`, `var(--primary)`,
+…) so any theme works without code changes — the killer demo of the
+cssVars decoupling.
 
-For non-theme items, the active theme is preserved and a slot badge
-shows which region the item would replace ("replaces: bar"). The detail
-pane shows an `nix-rice add <url>` install command for the local app to
-consume.
+For non-theme items, the active theme is preserved and a slot badge shows
+which region the item would replace ("replaces: bar"). The detail pane
+shows an `nix-rice add <url>` install command for the local app to consume.
 
 ## Design
 

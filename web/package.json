@@ -10,9 +10,14 @@
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "@rice-registry/shared": "workspace:*",
+    "solid-js": "^1.9.3"
+  },
   "devDependencies": {
     "@types/node": "^22",
     "typescript": "~5.6.2",
-    "vite": "^6.0.3"
+    "vite": "^6.0.3",
+    "vite-plugin-solid": "^2.11.0"
   }
 }

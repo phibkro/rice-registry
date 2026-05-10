@@ -1,0 +1,143 @@
+/* Shared shell styles: filter bar, item list, item detail. Apps add their
+ * own page-level layout on top. */
+
+:root {
+  --page-bg: #f4f6f8;
+  --page-fg: #1c2227;
+  --page-muted: #dde3e8;
+  --page-border: #c4ccd2;
+  --page-primary: #5b7a92;
+  --page-primary-fg: #ffffff;
+  --page-faint: #6b7480;
+  --page-danger: #b4564b;
+}
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--page-border);
+  background: white;
+}
+.filter-label { font-size: 0.85em; color: var(--page-faint); }
+
+.tags { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+.pill {
+  background: var(--page-primary);
+  color: var(--page-primary-fg);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.85em;
+  cursor: pointer;
+  user-select: none;
+}
+.pill .x { margin-left: 4px; opacity: 0.7; }
+
+.target-input, .type-filter {
+  border: 1px solid var(--page-border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font: inherit;
+  background: white;
+}
+.target-input { min-width: 200px; }
+
+.items { padding: 0.5rem 1rem 1rem; }
+.summary {
+  font-size: 0.85em;
+  color: var(--page-faint);
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--page-muted);
+  margin-bottom: 0.5rem;
+}
+
+.item {
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  margin-bottom: 0.25rem;
+}
+.item:hover { background: var(--page-muted); }
+.item.no-match { opacity: 0.45; }
+.item.selected {
+  background: var(--page-muted);
+  border-color: var(--page-primary);
+}
+.item .row { display: flex; justify-content: space-between; gap: 0.5rem; }
+.item .type {
+  font-size: 0.8em;
+  color: var(--page-faint);
+  font-family: ui-monospace, monospace;
+}
+.item .title { font-weight: 500; margin-top: 0.25rem; }
+.item .desc {
+  font-size: 0.9em;
+  color: #4a525c;
+  margin-top: 0.25rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.item .targets {
+  font-size: 0.8em;
+  color: var(--page-faint);
+  font-family: ui-monospace, monospace;
+  margin-top: 0.5rem;
+}
+
+.detail-body h2 { margin: 0 0 0.5rem; }
+.detail-body .meta { display: flex; gap: 0.75rem; color: var(--page-faint); font-size: 0.9em; }
+.detail-body .desc { color: #4a525c; }
+.detail-body .kv {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 1rem 0;
+  font-size: 0.95em;
+}
+.detail-body .kv dt { color: var(--page-faint); }
+.detail-body .kv dd { margin: 0; }
+.detail-body code {
+  font-family: ui-monospace, monospace;
+  background: var(--page-muted);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+.detail-body details {
+  border: 1px solid var(--page-border);
+  border-radius: 4px;
+  padding: 0.5rem;
+  margin: 0.75rem 0;
+}
+.detail-body summary { cursor: pointer; font-weight: 500; }
+.detail-body pre {
+  background: var(--page-muted);
+  padding: 0.5rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.85em;
+  margin-top: 0.5rem;
+}
+.detail-body .muted { color: var(--page-faint); }
+.detail-body .not-installable { color: var(--page-danger); }
+
+.hint, .error { color: var(--page-faint); font-style: italic; }
+.error { color: var(--page-danger); }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #dde4ea;
+    background: #181c20;
+    --page-bg: #181c20;
+    --page-fg: #dde4ea;
+    --page-muted: #2a3138;
+    --page-border: #3a434c;
+    --page-primary: #7ba0bd;
+    --page-primary-fg: #0c1014;
+  }
+  .filter, .target-input, .type-filter { background: #1f2429; }
+  .item:hover { background: var(--page-muted); }
+}

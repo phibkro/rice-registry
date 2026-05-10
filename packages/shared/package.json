@@ -1,0 +1,14 @@
+{
+  "name": "@rice-registry/shared",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./components/*": "./src/components/*.tsx",
+    "./styles/*.css": "./src/styles/*.css"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.9.3"
+  }
+}

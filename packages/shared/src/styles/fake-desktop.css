@@ -1,14 +1,6 @@
-/* The fake-desktop component reads CSS variables that themes inject:
- *   --background, --foreground, --primary, --primary-foreground,
- *   --accent, --muted, --border,
- *   --font-display, --font-mono, --radius
- *
- * Defaults below mimic mountain-mist (dark) so the preview always renders
- * something credible even before a theme is applied. Theme application
- * sets these vars on .fake-desktop directly, so cascade overrides win.
- */
+/* The fake-desktop component reads CSS variables that themes inject. */
 
-.fake-desktop {
+.fd {
   --background: #181c20;
   --foreground: #dde4ea;
   --primary: #7ba0bd;
@@ -34,7 +26,7 @@
   transition: background 0.4s ease, color 0.4s ease;
 }
 
-.fake-desktop.light {
+.fd.light {
   --background: #f4f6f8;
   --foreground: #1c2227;
   --primary: #5b7a92;
@@ -43,8 +35,6 @@
   --muted: #dde3e8;
   --border: #c4ccd2;
 }
-
-/* The bar */
 
 .fd-bar {
   display: flex;
@@ -58,16 +48,11 @@
   position: relative;
   z-index: 2;
 }
+.fd.light .fd-bar { background: rgba(255, 255, 255, 0.5); }
 
-.fake-desktop.light .fd-bar { background: rgba(255, 255, 255, 0.5); }
-
-.fd-workspaces {
-  display: flex;
-  gap: 6px;
-}
+.fd-workspaces { display: flex; gap: 6px; }
 .fd-ws {
-  width: 22px;
-  height: 18px;
+  width: 22px; height: 18px;
   border-radius: 4px;
   background: var(--muted);
   color: var(--foreground);
@@ -78,17 +63,7 @@
   cursor: default;
   transition: background 0.2s, color 0.2s;
 }
-.fd-ws.active {
-  background: var(--primary);
-  color: var(--primary-foreground);
-}
-.fd-ws.has-windows::after {
-  content: "·";
-  position: absolute;
-  margin-top: 14px;
-  color: var(--accent);
-  font-size: 14px;
-}
+.fd-ws.active { background: var(--primary); color: var(--primary-foreground); }
 
 .fd-clock {
   position: absolute;
@@ -106,8 +81,6 @@
   color: var(--accent);
 }
 
-/* Wallpaper area */
-
 .fd-wallpaper {
   flex: 1;
   position: relative;
@@ -118,8 +91,6 @@
     radial-gradient(circle at 70% 80%, color-mix(in oklab, var(--accent) 20%, transparent), transparent 50%),
     var(--background);
 }
-
-/* Mock windows */
 
 .fd-windows {
   display: grid;
@@ -169,11 +140,7 @@
 }
 .fd-win.browser .fd-win-body { font-family: var(--font-display); }
 
-.fd-browser-bar {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 10px;
-}
+.fd-browser-bar { display: flex; gap: 6px; margin-bottom: 10px; }
 .fd-url {
   flex: 1;
   background: var(--muted);
@@ -191,6 +158,7 @@
   margin-bottom: 8px;
 }
 .fd-card-title { font-weight: 600; margin-bottom: 4px; }
+.fd-card-desc { margin: 8px 0 0; opacity: 0.85; }
 .fd-pill {
   display: inline-block;
   background: var(--primary);
@@ -200,12 +168,11 @@
   font-size: 10px;
   margin-right: 4px;
 }
+.fd-dim { opacity: 0.7; }
 
 .fd-prompt { color: var(--primary); }
 .fd-blink { animation: fd-blink 1s steps(2) infinite; }
 @keyframes fd-blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
-
-/* "Slot highlight" badge — when an item provides/replaces a slot, mark it */
 
 .fd-slot-badge {
   position: absolute;
@@ -218,9 +185,10 @@
   font-size: 11px;
   font-weight: 500;
   z-index: 5;
-  opacity: 0;
-  transform: translateY(-4px);
-  transition: opacity 0.2s, transform 0.2s;
   pointer-events: none;
+  animation: fd-slot-fade-in 0.2s ease-out;
 }
-.fd-slot-badge.show { opacity: 1; transform: translateY(0); }
+@keyframes fd-slot-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
