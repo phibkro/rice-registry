@@ -10,6 +10,11 @@ use std::process::Command;
 
 /// Repo root, resolved at compile time. CARGO_MANIFEST_DIR points to
 /// `<repo>/app/src-tauri`; two parents up reaches the registry root.
+///
+/// DEV-ONLY: this only works while the binary lives next to the repo it was
+/// compiled in. For a packaged build, replace this with a runtime config
+/// (env var `RICE_REGISTRY_DIR`, or a `~/.config/rice-registry/config.toml`,
+/// or a CLI arg passed at startup). Tracked in docs/OUTSTANDING.md.
 const REPO_ROOT: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../..");
 
 fn registry_path() -> PathBuf {

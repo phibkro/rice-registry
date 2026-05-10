@@ -35,6 +35,8 @@ app/                         Tauri 2 desktop app (vanilla TS + Vite)
     src/lib.rs                   read_registry / read_item / apply_item
 
 docs/
+  DESIGN.md                    pinned decisions: shape, slot semantics, apply path
+  OUTSTANDING.md               punch list of what's deferred
   RICE_COOKER_COMPARISON.md    notes on amarsbar/rice-cooker manifest shape
 
 registry.json                generated index (committed for static hosting)
