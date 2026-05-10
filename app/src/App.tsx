@@ -91,9 +91,9 @@ export function App() {
   };
 
   return (
-    <div class="grid grid-rows-[auto_1fr_auto] h-screen text-page-fg bg-page-bg">
+    <div class="flex flex-col h-screen text-page-fg bg-page-bg">
       {/* ───── Header ───── */}
-      <header class="flex items-center gap-4 px-4 py-2 border-b border-page-border bg-page-surface">
+      <header class="flex shrink-0 items-center gap-4 px-4 py-2 border-b border-page-border bg-page-surface">
         <strong class="font-semibold tracking-tight flex-1">rice-registry</strong>
         <Show when={!isTauri}>
           <span class="text-xs text-page-faint">
@@ -127,8 +127,8 @@ export function App() {
       </header>
 
       {/* ───── Main: sidebar + preview ───── */}
-      <main class="grid grid-cols-[320px_1fr] overflow-hidden min-h-0">
-        <aside class="flex flex-col bg-page-surface border-r border-page-border overflow-hidden min-h-0">
+      <main class="flex flex-1 overflow-hidden min-h-0">
+        <aside class="flex flex-col w-80 shrink-0 bg-page-surface border-r border-page-border overflow-hidden">
           <FilterBar
             targets={machineTargets()}
             type={typeFilter()}
@@ -156,7 +156,7 @@ export function App() {
           </div>
         </aside>
 
-        <section class="flex flex-col bg-[#2a2f33] overflow-hidden min-h-0">
+        <section class="flex flex-col flex-1 min-w-0 bg-[#1a1d20] overflow-hidden">
           <FakeDesktop
             activeTheme={activeTheme()}
             selected={selectedItem() ?? null}
@@ -166,7 +166,7 @@ export function App() {
       </main>
 
       {/* ───── Footer ───── */}
-      <footer class="bg-page-surface border-t border-page-border px-4 py-3 max-h-[40vh] overflow-y-auto flex flex-col gap-2">
+      <footer class="shrink-0 bg-page-surface border-t border-page-border px-4 py-3 max-h-[40vh] overflow-y-auto flex flex-col gap-2">
         <Show
           when={selectedItem()}
           fallback={<p class="italic text-page-faint">select an item from the catalog</p>}
