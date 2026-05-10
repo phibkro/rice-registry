@@ -1,0 +1,226 @@
+/* The fake-desktop component reads CSS variables that themes inject:
+ *   --background, --foreground, --primary, --primary-foreground,
+ *   --accent, --muted, --border,
+ *   --font-display, --font-mono, --radius
+ *
+ * Defaults below mimic mountain-mist (dark) so the preview always renders
+ * something credible even before a theme is applied. Theme application
+ * sets these vars on .fake-desktop directly, so cascade overrides win.
+ */
+
+.fake-desktop {
+  --background: #181c20;
+  --foreground: #dde4ea;
+  --primary: #7ba0bd;
+  --primary-foreground: #0c1014;
+  --accent: #4d6678;
+  --muted: #2a3138;
+  --border: #3a434c;
+  --font-display: ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
+  --radius: 8px;
+
+  flex: 1;
+  margin: 1rem;
+  border-radius: 12px;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-display);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+.fake-desktop.light {
+  --background: #f4f6f8;
+  --foreground: #1c2227;
+  --primary: #5b7a92;
+  --primary-foreground: #ffffff;
+  --accent: #9ab3c5;
+  --muted: #dde3e8;
+  --border: #c4ccd2;
+}
+
+/* The bar */
+
+.fd-bar {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.fake-desktop.light .fd-bar { background: rgba(255, 255, 255, 0.5); }
+
+.fd-workspaces {
+  display: flex;
+  gap: 6px;
+}
+.fd-ws {
+  width: 22px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--muted);
+  color: var(--foreground);
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  cursor: default;
+  transition: background 0.2s, color 0.2s;
+}
+.fd-ws.active {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.fd-ws.has-windows::after {
+  content: "·";
+  position: absolute;
+  margin-top: 14px;
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.fd-clock {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+.fd-tray {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+  font-family: var(--font-mono);
+  color: var(--accent);
+}
+
+/* Wallpaper area */
+
+.fd-wallpaper {
+  flex: 1;
+  position: relative;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 30% 20%, color-mix(in oklab, var(--primary) 25%, transparent), transparent 50%),
+    radial-gradient(circle at 70% 80%, color-mix(in oklab, var(--accent) 20%, transparent), transparent 50%),
+    var(--background);
+}
+
+/* Mock windows */
+
+.fd-windows {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 12px;
+  width: 80%;
+  height: 75%;
+  font-size: 12px;
+}
+
+.fd-win {
+  background: color-mix(in oklab, var(--background) 92%, var(--foreground) 8%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+.fd-win.focused { border-color: var(--primary); }
+
+.fd-win-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in oklab, var(--background) 85%, var(--foreground) 15%);
+  font-size: 11px;
+}
+.fd-win-titlebar .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: color-mix(in oklab, var(--foreground) 30%, transparent);
+}
+.fd-win-titlebar .dot.r { background: #d97757; }
+.fd-win-titlebar .dot.y { background: #c5a86c; }
+.fd-win-titlebar .dot.g { background: #6da46d; }
+.fd-win-titlebar .title { margin-left: 6px; opacity: 0.75; }
+
+.fd-win-body {
+  flex: 1;
+  padding: 12px;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.fd-win.browser .fd-win-body { font-family: var(--font-display); }
+
+.fd-browser-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.fd-url {
+  flex: 1;
+  background: var(--muted);
+  border-radius: var(--radius);
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--foreground);
+  opacity: 0.85;
+}
+.fd-card {
+  background: var(--muted);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.fd-card-title { font-weight: 600; margin-bottom: 4px; }
+.fd-pill {
+  display: inline-block;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  margin-right: 4px;
+}
+
+.fd-prompt { color: var(--primary); }
+.fd-blink { animation: fd-blink 1s steps(2) infinite; }
+@keyframes fd-blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+/* "Slot highlight" badge — when an item provides/replaces a slot, mark it */
+
+.fd-slot-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  z-index: 5;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+}
+.fd-slot-badge.show { opacity: 1; transform: translateY(0); }

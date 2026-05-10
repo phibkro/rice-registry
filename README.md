@@ -34,6 +34,11 @@ app/                         Tauri 2 desktop app (vanilla TS + Vite)
   src-tauri/                   Rust backend
     src/lib.rs                   read_registry / read_item / apply_item
 
+web/                         Static showcase (vanilla TS + Vite)
+  src/main.ts                  filter + selection logic (mirrors app/)
+  src/fake-desktop.ts          mocked Hyprland session that re-skins via cssVars
+  scripts/copy-registry.ts     pre-build: copies registry.json + r/ to public/
+
 docs/
   DESIGN.md                    pinned decisions: shape, slot semantics, apply path
   OUTSTANDING.md               punch list of what's deferred
@@ -84,6 +89,31 @@ bun run tauri dev                        # first build is slow — Cargo fetches
 The frontend is plain HTML + vanilla TS + CSS; no React/Svelte/Vue. The
 Rust backend exposes three commands: `read_registry`, `read_item`, and
 `apply_item` (the last shells out to `bun cli/src/index.ts add r/<name>.json`).
+
+## Web showcase
+
+Static showcase site at `web/`. Deployable to GitHub Pages or any static
+host — the build emits a self-contained `dist/` with `index.html`,
+`registry.json`, and `r/*.json`.
+
+```sh
+nix develop
+cd web && bun install
+bun run dev      # vite dev server on localhost:1421
+bun run build    # → web/dist/ (deployable)
+```
+
+The showcase mirrors the local app's filter UI and adds a **fake-desktop
+preview pane** — a `<div>`-mocked Hyprland session that re-skins itself
+when you select a `registry:theme` by injecting that item's `cssVars`
+onto the preview's root. Light/dark mode toggle. Components reference
+semantic tokens (`var(--background)`, `var(--primary)`, …) so any theme
+works without code changes — the killer demo of the cssVars decoupling.
+
+For non-theme items, the active theme is preserved and a slot badge
+shows which region the item would replace ("replaces: bar"). The detail
+pane shows an `nix-rice add <url>` install command for the local app to
+consume.
 
 ## Design
 
