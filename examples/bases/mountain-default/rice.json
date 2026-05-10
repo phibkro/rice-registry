@@ -1,0 +1,21 @@
+{
+  "$schema": "../../../schemas/registry-item.schema.json",
+  "name": "mountain-default",
+  "type": "registry:base",
+  "title": "Mountain Default",
+  "description": "Cool, minimal Hyprland rice. Bundles the mountain-mist palette + minimal-bar. Drop in and go.",
+  "author": "rice-registry/example",
+  "license": "MIT",
+  "version": "0.1.0",
+  "categories": ["rice", "minimal", "cool"],
+  "targets": ["hyprland", "quickshell", "wayland"],
+  "registryDependencies": [
+    "mountain-mist",
+    "minimal-bar"
+  ],
+  "compatibility": {
+    "hyprland": ">=0.45",
+    "quickshell": ">=0.4",
+    "homeManager": ">=24.05"
+  }
+}

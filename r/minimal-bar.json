@@ -1,0 +1,51 @@
+{
+  "name": "minimal-bar",
+  "type": "registry:component",
+  "title": "Minimal Bar",
+  "description": "Top-edge Quickshell bar: workspaces on the left, clock centred, system tray on the right. Consumes the active theme palette.",
+  "author": "rice-registry/example",
+  "license": "MIT",
+  "version": "0.1.0",
+  "categories": [
+    "bar",
+    "quickshell",
+    "minimal"
+  ],
+  "targets": [
+    "hyprland",
+    "quickshell",
+    "wayland"
+  ],
+  "compatibility": {
+    "hyprland": ">=0.45",
+    "quickshell": ">=0.4",
+    "homeManager": ">=24.05"
+  },
+  "nixpkgsDependencies": [
+    "quickshell"
+  ],
+  "slots": {
+    "provides": [
+      "bar"
+    ],
+    "consumes": [
+      "theme.palette"
+    ],
+    "conflicts": [
+      "bar"
+    ]
+  },
+  "files": [
+    {
+      "path": "module.nix",
+      "type": "module:home",
+      "content": "{ config, lib, pkgs, ... }:\n\nlet\n  cfg = config.rice.components.minimal-bar;\nin {\n  options.rice.components.minimal-bar = {\n    enable = lib.mkEnableOption \"minimal-bar (Quickshell)\";\n  };\n\n  config = lib.mkIf cfg.enable {\n    home.packages = [ pkgs.quickshell ];\n\n    xdg.configFile.\"quickshell/minimal-bar/Bar.qml\".source = ./Bar.qml;\n\n    wayland.windowManager.hyprland.settings.exec-once = [\n      \"${pkgs.quickshell}/bin/qs -p ~/.config/quickshell/minimal-bar/Bar.qml\"\n    ];\n  };\n}\n"
+    },
+    {
+      "path": "Bar.qml",
+      "type": "qml",
+      "target": "@home/.config/quickshell/minimal-bar/Bar.qml",
+      "content": "import Quickshell\nimport Quickshell.Hyprland\nimport QtQuick\n\nPanelWindow {\n    anchors {\n        top: true\n        left: true\n        right: true\n    }\n    height: 32\n    color: Qt.rgba(0, 0, 0, 0)\n\n    Rectangle {\n        anchors.fill: parent\n        color: \"var(--background)\"\n        opacity: 0.92\n\n        Row {\n            anchors.left: parent.left\n            anchors.leftMargin: 8\n            anchors.verticalCenter: parent.verticalCenter\n            spacing: 6\n\n            Repeater {\n                model: Hyprland.workspaces\n                Rectangle {\n                    width: 24; height: 20\n                    color: modelData.active ? \"var(--primary)\" : \"var(--muted)\"\n                    radius: 4\n                    Text {\n                        anchors.centerIn: parent\n                        text: modelData.id\n                        color: modelData.active ? \"var(--primary-foreground)\" : \"var(--foreground)\"\n                    }\n                }\n            }\n        }\n\n        Text {\n            anchors.centerIn: parent\n            color: \"var(--foreground)\"\n            font.family: \"var(--font-mono)\"\n            text: Qt.formatDateTime(new Date(), \"ddd HH:mm\")\n        }\n    }\n}\n"
+    }
+  ]
+}

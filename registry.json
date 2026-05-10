@@ -1,0 +1,105 @@
+{
+  "$schema": "https://rice-registry.dev/schema/registry.json",
+  "name": "rice-registry-example",
+  "homepage": "https://rice-registry.dev",
+  "description": "Example rice registry built from ./examples.",
+  "items": [
+    {
+      "name": "minimal-bar",
+      "type": "registry:component",
+      "title": "Minimal Bar",
+      "description": "Top-edge Quickshell bar: workspaces on the left, clock centred, system tray on the right. Consumes the active theme palette.",
+      "author": "rice-registry/example",
+      "categories": [
+        "bar",
+        "quickshell",
+        "minimal"
+      ],
+      "targets": [
+        "hyprland",
+        "quickshell",
+        "wayland"
+      ],
+      "slots": {
+        "provides": [
+          "bar"
+        ],
+        "consumes": [
+          "theme.palette"
+        ],
+        "conflicts": [
+          "bar"
+        ]
+      },
+      "url": "/r/minimal-bar.json"
+    },
+    {
+      "name": "mountain-default",
+      "type": "registry:base",
+      "title": "Mountain Default",
+      "description": "Cool, minimal Hyprland rice. Bundles the mountain-mist palette + minimal-bar. Drop in and go.",
+      "author": "rice-registry/example",
+      "categories": [
+        "rice",
+        "minimal",
+        "cool"
+      ],
+      "targets": [
+        "hyprland",
+        "quickshell",
+        "wayland"
+      ],
+      "url": "/r/mountain-default.json"
+    },
+    {
+      "name": "mountain-mist",
+      "type": "registry:theme",
+      "title": "Mountain Mist",
+      "description": "Cool blue-grey palette derived from a foggy alpine wallpaper. Light + dark.",
+      "author": "rice-registry/example",
+      "categories": [
+        "palette",
+        "cool",
+        "minimal"
+      ],
+      "targets": [
+        "any"
+      ],
+      "slots": {
+        "provides": [
+          "theme.palette"
+        ]
+      },
+      "url": "/r/mountain-mist.json"
+    },
+    {
+      "name": "niri-default-bar",
+      "type": "registry:component",
+      "title": "Niri Default Bar",
+      "description": "Waybar config tuned for Niri's column-tiling. Workspace indicator follows scroll position; reduced animations.",
+      "author": "rice-registry/example",
+      "categories": [
+        "bar",
+        "waybar",
+        "minimal"
+      ],
+      "targets": [
+        "niri",
+        "waybar",
+        "wayland"
+      ],
+      "slots": {
+        "provides": [
+          "bar"
+        ],
+        "consumes": [
+          "theme.palette"
+        ],
+        "conflicts": [
+          "bar"
+        ]
+      },
+      "url": "/r/niri-default-bar.json"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../schemas/registry-item.schema.json",
+  "name": "mountain-mist",
+  "type": "registry:theme",
+  "title": "Mountain Mist",
+  "description": "Cool blue-grey palette derived from a foggy alpine wallpaper. Light + dark.",
+  "author": "rice-registry/example",
+  "license": "MIT",
+  "version": "0.1.0",
+  "categories": ["palette", "cool", "minimal"],
+  "targets": ["any"],
+  "compatibility": {
+    "stylix": ">=0.2"
+  },
+  "slots": {
+    "provides": ["theme.palette"]
+  },
+  "cssVars": {
+    "theme": {
+      "font-display": "Inter",
+      "font-mono": "JetBrains Mono",
+      "radius": "8px"
+    },
+    "light": {
+      "background": "#f4f6f8",
+      "foreground": "#1c2227",
+      "primary": "#5b7a92",
+      "primary-foreground": "#ffffff",
+      "accent": "#9ab3c5",
+      "muted": "#dde3e8",
+      "border": "#c4ccd2"
+    },
+    "dark": {
+      "background": "#181c20",
+      "foreground": "#dde4ea",
+      "primary": "#7ba0bd",
+      "primary-foreground": "#0c1014",
+      "accent": "#4d6678",
+      "muted": "#2a3138",
+      "border": "#3a434c"
+    }
+  }
+}

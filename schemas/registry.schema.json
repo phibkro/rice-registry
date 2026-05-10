@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rice-registry.dev/schema/registry.json",
+  "title": "Rice Registry",
+  "description": "Index for a rice registry. Lists items in slim form; full payloads live at /r/<name>.json relative to homepage.",
+  "type": "object",
+  "required": ["name", "items"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema":   { "type": "string" },
+    "name":      { "type": "string" },
+    "homepage":  { "type": "string", "format": "uri" },
+    "description": { "type": "string" },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type"],
+        "additionalProperties": false,
+        "properties": {
+          "name":        { "type": "string" },
+          "type":        { "type": "string" },
+          "title":       { "type": "string" },
+          "description": { "type": "string" },
+          "author":      { "type": "string" },
+          "categories":  { "type": "array", "items": { "type": "string" } },
+          "targets":     { "type": "array", "items": { "type": "string" } },
+          "slots": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "provides":  { "type": "array", "items": { "type": "string" } },
+              "consumes":  { "type": "array", "items": { "type": "string" } },
+              "conflicts": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "previews": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "static": { "type": "array", "items": { "type": "string" } },
+              "live":   { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "url": {
+            "type": "string",
+            "description": "Path or URL to the full registry-item.json for this item."
+          }
+        }
+      }
+    }
+  }
+}

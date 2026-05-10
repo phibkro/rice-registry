@@ -1,0 +1,43 @@
+{
+  "name": "niri-default-bar",
+  "type": "registry:component",
+  "title": "Niri Default Bar",
+  "description": "Waybar config tuned for Niri's column-tiling. Workspace indicator follows scroll position; reduced animations.",
+  "author": "rice-registry/example",
+  "license": "MIT",
+  "version": "0.1.0",
+  "categories": [
+    "bar",
+    "waybar",
+    "minimal"
+  ],
+  "targets": [
+    "niri",
+    "waybar",
+    "wayland"
+  ],
+  "compatibility": {
+    "homeManager": ">=24.05"
+  },
+  "nixpkgsDependencies": [
+    "waybar"
+  ],
+  "slots": {
+    "provides": [
+      "bar"
+    ],
+    "consumes": [
+      "theme.palette"
+    ],
+    "conflicts": [
+      "bar"
+    ]
+  },
+  "files": [
+    {
+      "path": "module.nix",
+      "type": "module:home",
+      "content": "{ config, lib, pkgs, ... }:\n\nlet\n  cfg = config.rice.components.niri-default-bar;\nin {\n  options.rice.components.niri-default-bar = {\n    enable = lib.mkEnableOption \"niri-default-bar (Waybar)\";\n  };\n\n  config = lib.mkIf cfg.enable {\n    programs.waybar = {\n      enable = true;\n      settings = [{\n        layer = \"top\";\n        position = \"top\";\n        modules-left = [ \"niri/workspaces\" ];\n        modules-center = [ \"clock\" ];\n        modules-right = [ \"tray\" \"battery\" ];\n      }];\n    };\n  };\n}\n"
+    }
+  ]
+}

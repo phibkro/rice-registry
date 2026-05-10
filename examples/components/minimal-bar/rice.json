@@ -1,0 +1,34 @@
+{
+  "$schema": "../../../schemas/registry-item.schema.json",
+  "name": "minimal-bar",
+  "type": "registry:component",
+  "title": "Minimal Bar",
+  "description": "Top-edge Quickshell bar: workspaces on the left, clock centred, system tray on the right. Consumes the active theme palette.",
+  "author": "rice-registry/example",
+  "license": "MIT",
+  "version": "0.1.0",
+  "categories": ["bar", "quickshell", "minimal"],
+  "targets": ["hyprland", "quickshell", "wayland"],
+  "compatibility": {
+    "hyprland": ">=0.45",
+    "quickshell": ">=0.4",
+    "homeManager": ">=24.05"
+  },
+  "nixpkgsDependencies": ["quickshell"],
+  "slots": {
+    "provides": ["bar"],
+    "consumes": ["theme.palette"],
+    "conflicts": ["bar"]
+  },
+  "files": [
+    {
+      "path": "module.nix",
+      "type": "module:home"
+    },
+    {
+      "path": "Bar.qml",
+      "type": "qml",
+      "target": "@home/.config/quickshell/minimal-bar/Bar.qml"
+    }
+  ]
+}

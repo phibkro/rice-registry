@@ -1,0 +1,27 @@
+{
+  "$schema": "../../../schemas/registry-item.schema.json",
+  "name": "niri-default-bar",
+  "type": "registry:component",
+  "title": "Niri Default Bar",
+  "description": "Waybar config tuned for Niri's column-tiling. Workspace indicator follows scroll position; reduced animations.",
+  "author": "rice-registry/example",
+  "license": "MIT",
+  "version": "0.1.0",
+  "categories": ["bar", "waybar", "minimal"],
+  "targets": ["niri", "waybar", "wayland"],
+  "compatibility": {
+    "homeManager": ">=24.05"
+  },
+  "nixpkgsDependencies": ["waybar"],
+  "slots": {
+    "provides": ["bar"],
+    "consumes": ["theme.palette"],
+    "conflicts": ["bar"]
+  },
+  "files": [
+    {
+      "path": "module.nix",
+      "type": "module:home"
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rice-registry.dev/schema/registry-item.json",
+  "title": "Rice Registry Item",
+  "description": "A single distributable item in a rice registry. Schema is a Nix-extended adaptation of shadcn/ui's registry-item.json (https://ui.shadcn.com/schema/registry-item.json).",
+  "type": "object",
+  "required": ["name", "type"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Lowercase, kebab-case identifier unique within the registry."
+    },
+    "type": {
+      "enum": [
+        "registry:base",
+        "registry:component",
+        "registry:ui",
+        "registry:layout",
+        "registry:theme",
+        "registry:style",
+        "registry:font",
+        "registry:wallpaper",
+        "registry:soundpack",
+        "registry:animation",
+        "registry:lib",
+        "registry:file"
+      ],
+      "description": "The kind of artifact. Drives slot semantics and renderer expectations."
+    },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "author": { "type": "string" },
+    "homepage": { "type": "string", "format": "uri" },
+    "license": { "type": "string" },
+    "version": { "type": "string" },
+    "registryDependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Other registry items this depends on. By name (same registry), namespaced (@ns/name), or absolute URL to a registry-item.json."
+    },
+    "nixpkgsDependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "nixpkgs derivation names this item needs at runtime (e.g. 'matugen', 'grim')."
+    },
+    "files": {
+      "type": "array",
+      "description": "Source files copied or imported into the user's config.",
+      "items": {
+        "type": "object",
+        "required": ["path", "type"],
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Source-relative path. Resolved against the directory of rice.json at build time."
+          },
+          "type": {
+            "enum": [
+              "module:home",
+              "module:nixos",
+              "qml",
+              "css",
+              "scss",
+              "config",
+              "asset",
+              "script"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "description": "Destination path placeholder (e.g. '@home/.config/quickshell/{name}/Bar.qml'). Optional for module:* types which are imported."
+          },
+          "content": {
+            "type": "string",
+            "description": "Inlined file content. Populated by `nix-rice build` from `path`."
+          }
+        }
+      }
+    },
+    "cssVars": {
+      "type": "object",
+      "description": "Token values, scoped. Components reference token names; themes set values; swap = swap values, no component changes.",
+      "additionalProperties": false,
+      "properties": {
+        "theme": { "type": "object", "additionalProperties": { "type": "string" } },
+        "light": { "type": "object", "additionalProperties": { "type": "string" } },
+        "dark":  { "type": "object", "additionalProperties": { "type": "string" } }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "description": "Version constraints for the runtime substrate. Resolver checks before install.",
+      "additionalProperties": false,
+      "properties": {
+        "hyprland":    { "type": "string" },
+        "quickshell":  { "type": "string" },
+        "waybar":      { "type": "string" },
+        "stylix":      { "type": "string" },
+        "homeManager": { "type": "string" },
+        "nixpkgs":     { "type": "string" }
+      }
+    },
+    "slots": {
+      "type": "object",
+      "description": "Explicit slot declarations. Drives conflict surfacing in the resolver.",
+      "additionalProperties": false,
+      "properties": {
+        "provides":  { "type": "array", "items": { "type": "string" } },
+        "consumes":  { "type": "array", "items": { "type": "string" } },
+        "conflicts": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "previews": {
+      "type": "object",
+      "description": "Visual previews. Paths are source-relative; URLs are absolute.",
+      "additionalProperties": false,
+      "properties": {
+        "static": { "type": "array", "items": { "type": "string" } },
+        "live":   { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "categories": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "targets": {
+      "type": "array",
+      "description": "Substrate tags this item targets. Resolver requires every tag to be satisfied by the user's machine profile, except 'any' which is universal. Vocabulary: compositors (hyprland, sway, niri, river, kwin, mutter, gnome-shell), bars (waybar, quickshell, eww, ags, gbar, polybar), toolkits (gtk3, gtk4, qt5, qt6), DEs (gnome, kde, xfce, cinnamon, cosmic, lxqt, mate, budgie), session (wayland, x11), or 'any'.",
+      "items": { "type": "string" },
+      "default": ["any"]
+    },
+    "meta": {
+      "type": "object",
+      "description": "Arbitrary key-value metadata. Reserved for renderer-specific extensions."
+    }
+  }
+}
