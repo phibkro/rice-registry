@@ -6,22 +6,14 @@ git log is the history).
 
 ## Apply path (the big one)
 
-`nix-rice add` already validates schema, resolves transitive deps, and
-checks slot conflicts against `installed.json`. What's missing is the
-actual file-write + home-manager integration. Steps to land:
+`nix-rice add` now validates schema, resolves transitive deps, checks
+slot conflicts against `installed.json`, and **materializes files +
+regenerates the managed module + persists state**. What's left:
 
-- [ ] **Write-side of apply** — for each file in the resolved closure,
-      materialize content to disk:
-  - `module:home` files → `~/.config/rice-registry/items/<name>/module.nix`
-  - `qml` / `asset` files → resolve `@home/...` placeholders against `$HOME`
-  - regenerate `~/.config/rice-registry/rice-registry.nix` to import every
-    installed `module:home` file
-  - append entries to `installed.json`
-  - print `nh home switch` next-step (don't run automatically — user
-    reviews the diff first)
 - [ ] **`nix-rice remove <name>`** — inverse of add. Pop from
       installed.json, regenerate the managed module, optionally rm
-      `items/<name>/`.
+      `items/<name>/`. Refuse if another installed item depends on it
+      (via `registryDependencies`) unless `--cascade`.
 - [ ] **Compatibility version checks** — semver parsing for
       `compatibility.{hyprland, quickshell, homeManager, …}`. Compare
       against the user's machine; fail conflict-check on mismatch.

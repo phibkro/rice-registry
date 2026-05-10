@@ -141,7 +141,9 @@ export function detectConflicts(
 }
 
 /** Top-level: resolve a root item's transitive deps + check conflicts
- * against an already-installed set. */
+ * against an already-installed set. Items already in `installedNames`
+ * are excluded from the pending set — re-running `add` on something
+ * already installed should not false-trigger a self-conflict. */
 export async function plan(
   root: RegistryItem,
   installedNames: string[]
@@ -156,7 +158,10 @@ export async function plan(
     else installUnsatisfied.push(n);
   }
 
-  const conflicts = detectConflicts(installed, resolved.items);
+  const installedSet = new Set(installed.map((it) => it.name));
+  const pending = resolved.items.filter((it) => !installedSet.has(it.name));
+
+  const conflicts = detectConflicts(installed, pending);
   conflicts.unsatisfied = [...resolved.unsatisfied, ...installUnsatisfied];
   if (conflicts.unsatisfied.length > 0) conflicts.ok = false;
 
